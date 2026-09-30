@@ -1,0 +1,12 @@
+# Core (needed for src/preprocessing.py and src/evaluation.py)
+numpy>=1.26
+pandas>=2.0
+pillow>=10.0
+scikit-learn>=1.3
+
+# Training and inference (needed for src/training.py)
+tensorflow>=2.20
+
+# Google Drive access (needed for src/drive_sync.py)
+google-api-python-client>=2.100
+google-auth>=2.23
