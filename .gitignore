@@ -2,14 +2,58 @@
 raw_images/
 processed_images/
 Preprocessed_Dataset_RESTRICTED.zip
+Preprocessed_Dataset_v2_RESTRICTED.zip
 Original_Master_Evaluation.xlsx
+Clock_Drawing_Master_Evaluation.xlsx
 Original_Source_Manifest.csv
 Reviewed_Dataset_Split.csv
+dataset_split.csv
+dataset_split_v2.csv
 test_predictions.csv
 raw_image_hashes.csv
 processed_image_hashes.csv
 Label_Conflict_Review_Queue.csv
 Record_Disposition.csv
 data_validation.json
+run_summary.json
+
+# Restricted/controlled folders: only their explanatory README may be tracked
+restricted_data/*
+!restricted_data/README.md
+Dataset/*
+!Dataset/README.md
+splits/*
+!splits/README.md
+
+# Dataset archives
+*.zip
+*.tar
+*.tar.gz
+
+# Model binaries
 *.keras
+*.h5
+model/*
+!model/README.md
+
+# Credentials and secrets
+*.pem
+*.key
+*credentials*.json
+client_secret*.json
+token.json
+service_account*.json
+.env
+.env.*
+
+# Notebook checkpoints
 .ipynb_checkpoints/
+
+# Local environments and caches
+.venv/
+venv/
+env/
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
