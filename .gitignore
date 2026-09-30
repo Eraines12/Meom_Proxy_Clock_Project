@@ -1,0 +1,15 @@
+# Controlled data and derived row-level files
+raw_images/
+processed_images/
+Preprocessed_Dataset_RESTRICTED.zip
+Original_Master_Evaluation.xlsx
+Original_Source_Manifest.csv
+Reviewed_Dataset_Split.csv
+test_predictions.csv
+raw_image_hashes.csv
+processed_image_hashes.csv
+Label_Conflict_Review_Queue.csv
+Record_Disposition.csv
+data_validation.json
+*.keras
+.ipynb_checkpoints/
