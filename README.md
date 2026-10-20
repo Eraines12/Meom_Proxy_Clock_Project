@@ -6,9 +6,9 @@
 
 👉 **[Launch MindDial AI](https://mind-dial.netlify.app)**
 
-MindDial AI is an educational AI-assisted clock-drawing screening-support prototype designed to evaluate four visible clock-drawing criteria and produce a 0–4 feature score.
+MindDial AI is an educational AI-assisted clock-drawing screening-support prototype. It evaluates four visible clock-drawing criteria and produces a 0–4 feature score.
 
-**The Netlify application above is the primary public demo of this project.** The notebooks in [`notebooks/`](notebooks/) are development and model-training evidence — they are no longer the main demo. **The live app's interface, accessibility, and decision system are fully built, but no real AI model is connected yet** — see [Current AI Model](#current-ai-model) for what the app shows today instead of a score.
+**The Netlify app above is the primary public demo.** The [`notebooks/`](notebooks/) are development/training evidence, not the demo. **The interface, accessibility, and decision system are fully built — no real AI model is connected yet.** See [Current AI Model](#current-ai-model).
 
 > **MindDial AI does not diagnose Alzheimer's disease, dementia, or any other medical condition, and is not a substitute for professional evaluation.** See [Medical Disclaimer](#medical-disclaimer).
 
@@ -34,35 +34,35 @@ This repository, formerly tracked as `Meom_Proxy_Clock_Project`, is the GitHub h
 | AI analyzes 4 criteria → PASS/FAIL/NEEDS REVIEW → 0–4 score | ⏳ Pending a connected backend — shows "AI model connection pending" |
 | Age-group context, result explanation, brain-health info, AI assistant | 📋 Planned |
 
-The app ([source](app/), deployed at [mind-dial.netlify.app](https://mind-dial.netlify.app)) fully implements setup, accessibility, demographics, and upload. **No simulated or demo scores are shown** — until a real backend is connected, results read "AI model connection pending" and quality checks read "Not checked." See [Current AI Model](#current-ai-model) and [`app/INFERENCE.md`](app/INFERENCE.md) for what's still needed.
+The app ([source](app/), live at [mind-dial.netlify.app](https://mind-dial.netlify.app)) implements setup, accessibility, demographics, and upload. **No simulated or demo scores are shown.** Until a backend is connected, results read "AI model connection pending" and quality checks read "Not checked." See [Current AI Model](#current-ai-model) and [`app/INFERENCE.md`](app/INFERENCE.md).
 
 ## Four Scoring Criteria
 
-MindDial AI predicts four visible clock-drawing features. Each predicted feature contributes **1 point**, for a final feature score of **0–4**:
+MindDial AI predicts four visible clock-drawing features, each worth **1 point**, for a score of **0–4**:
 
-1. **Closed Circle** — the clock face is a single closed loop
-2. **All 12 Numbers** — all twelve numbers (1–12) are present
-3. **Correct Number Position** — numbers are placed in roughly correct clock positions
-4. **Correct Clock Hands** — two hands are present and point to a plausible time
+1. **Closed Circle** — a single closed loop
+2. **All 12 Numbers** — all twelve numbers present
+3. **Correct Number Position** — numbers roughly in the right clock positions
+4. **Correct Clock Hands** — two hands pointing to a plausible time
 
-The 0–4 score is a **feature count, not a diagnostic score or percentage risk** — it reflects how many of the four visible drawing features the model detected, nothing more.
+The score is a **feature count, not a diagnosis or risk percentage.**
 
 ## Current AI Model
 
-The **trained research baseline** is a **ResNet50** convolutional network (`resnet50_v2_20260929T232102Z_1e7339`) with a frozen ImageNet backbone, trained for 10 epochs with no augmentation or fine-tuning, documented in the [Model Card](docs/Model_Card_ResNet50.md). This research model is **separate from the live app and is NOT connected to it yet.**
+The **research baseline** is a **ResNet50** network (`resnet50_v2_20260929T232102Z_1e7339`), frozen ImageNet backbone, trained 10 epochs with no augmentation, documented in the [Model Card](docs/Model_Card_ResNet50.md). **It is not connected to the live app.**
 
-The live app's `app/analysis.js` defines an `analyzeClockDrawing(file)` adapter with a deployment-only `endpoint` setting that ships **empty by default**. With no endpoint configured, the app makes no network request at all and shows **"AI model connection pending — no score has been generated"** — there is no fallback, simulated, or demo score. Connecting the real model requires deploying an inference service behind a same-origin endpoint (see [`app/INFERENCE.md`](app/INFERENCE.md)) that:
+`app/analysis.js` defines an `analyzeClockDrawing(file)` adapter with an **empty endpoint by default** — no network request, no score, until one is configured. Connecting a real model requires deploying a same-origin inference service (see [`app/INFERENCE.md`](app/INFERENCE.md)) that:
 
-- loads the trained ResNet50 checkpoint,
-- applies the exact training preprocessing (orientation, crop, size, normalization),
-- returns a JSON response with a non-empty `modelVersion` string and four `confidences` values in `[0, 1]` (one per criterion, matching the documented key order), and
-- is verified end-to-end against held-out data, including open-circle cases, before any performance claim is made about the live app.
+- loads the trained checkpoint,
+- matches the training preprocessing exactly,
+- returns `modelVersion` plus four `confidences` in `[0, 1]`, and
+- is evaluated end-to-end on held-out data, including open circles, before any performance claim.
 
-Until that service exists, the `app/` folder is a fully functional **interface and decision-system shell** with no live scoring.
+Until then, `app/` is a complete **interface and decision-system shell** with no live scoring.
 
 ## Current Performance
 
-These results describe the **offline research baseline** evaluated in `notebooks/` and `docs/`, not a live scoring run — the deployed app does not generate scores yet (see [Current AI Model](#current-ai-model)). The project began with **400 original image records**. The evaluated release contains **363 reviewed records** (25 conflicting-label records and 12 redundant copies excluded), split **254 / 54 / 55** for train/validation/test. The held-out baseline reports:
+These numbers are the **offline research baseline** from `notebooks/`/`docs/`, not a live score — the app doesn't score yet. From **400 original records**, the evaluated release keeps **363** (25 conflicting-label, 12 duplicate excluded), split **254/54/55** train/validation/test:
 
 - **79.55%** test binary accuracy
 - **40.00%** exact total-score agreement (22/55)
@@ -76,18 +76,18 @@ These are **internal results from 55 test records, not external or clinical vali
   <a href="results/"><img src="results/training_history.png" alt="Training history chart" width="48%"></a>
 </p>
 
-Two dataset states exist in project history and are not interchangeable: the **historical preprocessing output** (400 records, 280/60/60 split, from `notebooks/Data_Preprocessing.ipynb`) and the **reviewed/evaluated release** (363 records, 254/54/55 split, after an additional duplicate/conflicting-label review pass) actually used above. Original labels for all 400 records are preserved unchanged. See [`docs/Split_Manifest_Summary.md`](docs/Split_Manifest_Summary.md) and [`docs/Final_Data_Report.md`](docs/Final_Data_Report.md) for the full review methodology.
+Two dataset versions exist: the **historical preprocessing output** (400 records, 280/60/60 split, from `notebooks/Data_Preprocessing.ipynb`) and the **reviewed/evaluated release** (363 records, 254/54/55 split) used above. All 400 original labels are preserved unchanged. See [`docs/Split_Manifest_Summary.md`](docs/Split_Manifest_Summary.md) and [`docs/Final_Data_Report.md`](docs/Final_Data_Report.md).
 
 ## Known Model Limitations
 
-- **Open-circle false positives:** the current baseline has sometimes classified an obviously open circle as **"Closed Circle: PASS."** Reducing this specific failure mode is a primary goal of the [Model Improvement Roadmap](docs/Model_Improvement_Roadmap.md).
-- **Small, single-source test set:** performance is measured on only 55 held-out records from one reported source, not an external or multi-site validation set.
-- **No clinical validation:** the 0–4 score has not been validated against clinical diagnoses, cognitive assessments, or outcomes of any kind.
-- **Thresholds are not yet validated:** the team is planning to test stricter per-criterion thresholds — for example, requiring **90% model confidence** for Closed Circle — **without claiming that 90% (or any other value) is already a validated or final threshold.** See [MindDial Decision System](#minddial-decision-system).
+- **Open-circle false positives:** the baseline sometimes marks an open circle as **"Closed Circle: PASS."** A primary goal of the [Model Improvement Roadmap](docs/Model_Improvement_Roadmap.md).
+- **Small, single-source test set:** only 55 held-out records, one source — not external or multi-site.
+- **No clinical validation:** the 0–4 score isn't validated against diagnoses or outcomes.
+- **Thresholds aren't validated:** the team plans to test stricter per-criterion thresholds, without claiming any value is already validated. See [MindDial Decision System](#minddial-decision-system).
 
 ## MindDial Decision System
 
-Each criterion resolves to exactly one of two binary outcomes: **PASS = 1** or **FAIL = 0**. Each criterion is evaluated independently and reported as:
+Each criterion is a binary outcome, **PASS = 1** or **FAIL = 0**, reported as:
 
 ```text
 Closed Circle
@@ -96,9 +96,9 @@ Threshold: 88%
 PASS ✓
 ```
 
-**Needs Review is not a third scoring value.** It is a separate, independent warning (`needsReview`) that appears when a criterion's confidence is close to its threshold (within ±0.08 in the current app code), signaling the decision is borderline — it never changes the PASS/FAIL outcome or the point total. Model confidence is a model output, not a medical probability. Summing the four PASS=1/FAIL=0 outcomes produces the final **integer 0–4 score**.
+**Needs Review is not a third scoring value** — it's an independent warning (`needsReview`) shown when confidence is close to the threshold (±0.08), flagging a borderline case without changing PASS/FAIL or the point total. Model confidence is a model output, not a medical probability. The four PASS/FAIL outcomes sum to the final **0–4 score**.
 
-The current provisional thresholds are frozen, code-only settings defined in [`app/analysis.js`](app/analysis.js) — there are **no user-editable threshold controls** in the app:
+The provisional thresholds are frozen, code-only settings in [`app/analysis.js`](app/analysis.js) — **no user-editable controls** in the app:
 
 ```javascript
 const thresholds = Object.freeze({
@@ -109,33 +109,33 @@ const thresholds = Object.freeze({
 });
 ```
 
-These are **provisional research settings only, not validated clinical cutoffs.** The team plans to test stricter values — for example, raising Closed Circle toward 0.90 and beyond — specifically to address the open-circle false-positive pattern, **without claiming any such threshold is already validated.** Because no inference backend is connected yet, these thresholds currently apply to no live model output; they will take effect once a real backend is deployed. **Changing a threshold only changes the decision boundary on model output; it does not retrain the model and does not by itself improve model accuracy.** See [Model Improvement — Weeks 7–10](#model-improvement--weeks-7-10) for how accuracy itself is planned to improve.
+These are **provisional research settings, not validated clinical cutoffs.** The team plans to test stricter values to address the open-circle false positive, without claiming any value is already validated. Thresholds don't apply to live output yet since no backend is connected. **Changing a threshold only moves the decision boundary — it doesn't retrain the model or improve accuracy.** See [Model Improvement — Weeks 7–10](#model-improvement--weeks-7-10).
 
 ## Upload & Image Handling
 
-The upload step (`app/analysis.js` + `app/script.js`) accepts **JPEG, PNG, or WebP, up to 10 MB**, and verifies the file decodes as a valid image before enabling Analyze. Once selected, the app shows a **live preview**, lets the user **replace or remove** the image at any time, and **clears any stale results** whenever the image changes so a result can never be shown next to the wrong drawing. Rapid re-selection is guarded so only the latest chosen file is analyzed, and selecting Analyze multiple times cannot queue duplicate requests. Upload progress, errors (wrong type, oversized file, unreadable image, request timeout, HTTP failure, or a malformed backend response), and the quality placeholder states are all announced through accessible `aria-live`/status regions, not color alone.
+Accepts **JPEG, PNG, or WebP, up to 10 MB**, and verifies the file decodes before enabling Analyze. Shows a **live preview**, lets you **replace or remove** the image, and **clears stale results** whenever the image changes. Re-selecting or re-analyzing can't queue duplicate requests. Errors (wrong type, oversized, unreadable, timeout, HTTP failure, malformed response) are announced through accessible status regions, not color alone.
 
-**Image quality is not yet assessed.** Successful decoding only confirms the file is a readable image — it does **not** evaluate sharpness, full clock visibility, or lighting. Those three checks currently display as **"Not checked"** placeholders until a real image-quality detector is built (see [Planned Features](#planned-features)).
+**Image quality isn't assessed yet.** Decoding only confirms the file is readable — sharpness, full clock visibility, and lighting all show **"Not checked"** until a real quality detector exists (see [Planned Features](#planned-features)).
 
 ## Accessibility Features
 
-The app includes on-page accessibility controls designed for elderly and low-vision users:
+On-page controls for elderly and low-vision users:
 
 - **High Contrast** mode
 - **Large Text** mode
-- **Color-blind-friendly** design — pass/fail states are never shown with color alone; every result uses a symbol and a word: **PASS ✓**, **FAIL ✕**, **NEEDS REVIEW ⚠**
+- **Color-blind-friendly** design — states always pair a symbol with a word: **PASS ✓**, **FAIL ✕**, **NEEDS REVIEW ⚠**
 
 ## Multilingual Support
 
-The interface ships with **English, Spanish, Vietnamese, Chinese, Arabic, and French** selectors. **English is the fallback dictionary for every string.** Spanish has the broadest additional coverage; Vietnamese, Chinese, Arabic, and French currently cover the core setup, upload, and results strings and fall back to English for anything not yet translated. **Arabic renders right-to-left** (`lang=ar`, `dir=rtl`), while numeric confidence meters stay left-to-right for readability. The translation system (`app/script.js`) is a simple key/value map per locale, so more languages can be added without redesigning the app. Translation completeness and native-speaker review are still needed for the four partial languages.
+Six languages: **English, Spanish, Vietnamese, Chinese, Arabic, French.** **English is the fallback** for every string. Spanish has the broadest coverage; the other four cover the core journey and fall back to English elsewhere. **Arabic renders right-to-left.** Translation completeness and native-speaker review are still needed for the partial languages.
 
 ## Demographic Context
 
-Before the clock-drawing step, the app collects **age, education level, preferred language, an optional reason for use, and a required consent checkbox**, alongside a clear statement that MindDial AI is an educational/research screening-support tool and not a diagnosis. **Demographic data never changes the AI's four scoring predictions and is never sent with inference requests** — age and education are kept structurally separate from the scoring pipeline (the upload adapter transmits only the image file itself, with an anonymous filename, to the backend) and are reserved for optional, separate research context in the future. Drawings and results are kept **only in page memory** for the current session; only display preferences (high contrast, large text, color-blind mode) are saved to `localStorage`.
+Before the drawing step, the app collects **age, education, preferred language, an optional reason, and consent.** **Demographics never change the AI score and are never sent with inference requests** — kept separate for optional future research context. Drawings and results stay **in page memory only**; only display preferences are saved to `localStorage`.
 
 ## Model Improvement — Weeks 7–10
 
-The [Model Improvement Roadmap](docs/Model_Improvement_Roadmap.md) documents planned experiments for improving the ResNet50 baseline, with a primary focus on reducing the open-circle false-positive pattern and over-prediction of "pass." **All experiments below are planned; none beyond the Experiment 1 baseline have been run yet.**
+The [Model Improvement Roadmap](docs/Model_Improvement_Roadmap.md) documents planned experiments to reduce the open-circle false positive and over-prediction of "pass." **All experiments below are planned; only the Experiment 1 baseline has been run.**
 
 ## Experiments
 
@@ -159,16 +159,15 @@ Each experiment must report, at minimum, the following to stay comparable to the
 
 ## Planned Features
 
-- **Real AI inference** — connecting `app/analysis.js` to a deployed ResNet50 (or successor) backend; see [Current AI Model](#current-ai-model) and [`app/INFERENCE.md`](app/INFERENCE.md)
-- Image quality detection (blurry, cropped, poor-lighting warnings) before analysis, replacing today's "Not checked" placeholders
-- Age-group research context, shown separately from the AI score and only using percentages backed by matching published research
-- **"Explain My Results"** — the results screen already shows a clearly labeled **"Explain My Results — Coming soon"** placeholder; the actual plain-language explanation and general brain-health information feature is not implemented yet
-- An optional **AI assistant** that explains results only — it must not change the model score, diagnose a disease, or invent medical statistics
+- **Real AI inference** — connect `app/analysis.js` to a deployed ResNet50 (or successor) backend; see [Current AI Model](#current-ai-model) and [`app/INFERENCE.md`](app/INFERENCE.md)
+- Image quality detection (blur, cropping, lighting), replacing today's "Not checked" placeholders
+- Age-group research context, shown separately from the AI score
+- **"Explain My Results"** — currently a labeled "Coming soon" placeholder; the real explanation feature isn't built yet
+- An optional **AI assistant** that explains results only, without changing the score or inventing statistics
 - Model interpretability / Grad-CAM visualizations
 - Improved model accuracy (see [Experiments](#experiments))
 - Validated, criterion-specific thresholds (replacing the provisional values above)
-- Full translation coverage and native-speaker review for Vietnamese, Chinese, Arabic, and French
-- Additional interface languages beyond the current six
+- Full translation coverage and native-speaker review, plus additional languages
 
 ## Project Structure
 
@@ -188,7 +187,7 @@ Each experiment must report, at minimum, the following to stay comparable to the
 | [🧠 Model](model/) | ResNet50 baseline release status and storage approach |
 | [🔒 Controlled data](restricted_data/) | Restricted materials intentionally absent from GitHub |
 
-**Run the app locally:** the app is static HTML/CSS/JS with no build step and no server dependency.
+**Run locally:** static HTML/CSS/JS, no build step.
 
 ```bash
 cd app
@@ -196,16 +195,16 @@ python -m http.server 8080
 # then open http://localhost:8080
 ```
 
-**Deploy to Netlify:** connect this repository in Netlify and set the publish directory to `app/` (no build command is required), or drag-and-drop the `app/` folder into Netlify's manual deploy UI. Netlify should auto-detect `app/index.html` as the site entry point.
+**Deploy to Netlify:** connect this repo and set the publish directory to `app/` (no build command needed), or drag-and-drop `app/` into Netlify's manual deploy UI.
 
 ## Privacy & Data Protection
 
-- **Demographic data does not change the AI score and is never sent with inference requests** — see [Demographic Context](#demographic-context).
-- **The live app keeps drawings and results in memory only, for the current session.** Nothing is written to `localStorage` except display preferences (high contrast, large text, color-blind mode); preview object URLs are released as soon as an image is replaced, removed, or superseded.
-- **No restricted data is in this public repository.** Restricted project data (raw and processed clock-drawing images, the master evaluation workbook, and row-level split manifests) is maintained in **permission-controlled storage** and is intentionally excluded from GitHub. This repository does not publish the storage location; authorized team members should request current access details through existing project channels (see [restricted_data/README.md](restricted_data/README.md) and [Dataset/README.md](Dataset/README.md)).
+- **Demographics never change the AI score or get sent with inference requests** — see [Demographic Context](#demographic-context).
+- **Drawings and results stay in memory only**, for the current session. Only display preferences go to `localStorage`; preview URLs are released when an image is replaced or removed.
+- **No restricted data is in this public repository.** Raw/processed images, the evaluation workbook, and split manifests live in permission-controlled storage, excluded from GitHub. Team members should request access through existing channels (see [restricted_data/README.md](restricted_data/README.md), [Dataset/README.md](Dataset/README.md)).
 - **Nothing from `restricted_data/` is imported into the public `app/`.**
-- [NHATS Round 14 Clock Drawing Images](https://www.nhats.org/data-access/nhats/14) is the **team-reported dataset source**; the local files have not been independently matched to that release. Under the [NHATS Conditions of Use](https://www.nhats.org/conditions-of-use), access is individual and public-use data may not be transferred or uploaded to covered public AI platforms, including Copilot. A private GitHub repository does not change those terms.
-- This repository contains checked documentation, aggregate CSV summaries, charts without drawings, cleaned/output-free notebooks, reusable extracted source code (`src/`), and the public app source (`app/`). It excludes raw and processed clock images, row-level labels, split manifests, predictions, image hashes, dataset archives, restricted Grad-CAM examples, and trained model weights (unless the team has confirmed redistribution rights).
+- [NHATS Round 14 Clock Drawing Images](https://www.nhats.org/data-access/nhats/14) is the **team-reported dataset source**, not independently verified. Under the [NHATS Conditions of Use](https://www.nhats.org/conditions-of-use), access is individual and public-use data can't be uploaded to covered public AI platforms, including Copilot — a private repo doesn't change that.
+- This public repo contains checked documentation, aggregate summaries, charts, cleaned notebooks, reusable source (`src/`), and the app (`app/`). It excludes raw/processed images, labels, manifests, predictions, hashes, and trained weights (unless redistribution rights are confirmed).
 
 ## Medical Disclaimer
 
