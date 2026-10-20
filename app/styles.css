@@ -42,3 +42,6 @@
 [dir="rtl"] fieldset{padding:28px 0}
 [dir="rtl"] legend{float:none}
 [dir="rtl"] #error,[dir="rtl"] .footnote{margin-left:0;margin-right:0}
+
+/* Accessible upload controls and bidirectional results. */
+.dropzone:focus-within{outline:3px solid var(--accent);outline-offset:4px}.file-btn{cursor:pointer}#upload-status{overflow-wrap:anywhere}.criterion-card header{flex-wrap:wrap}.review-warning{color:var(--ink);border-inline-start:3px solid var(--accent);padding-inline-start:12px}.color .badge.pass,.color .badge.fail{background:#eef4fa;color:#173858;border:1px solid currentColor}.contrast .demo-banner{background:white;color:black;border-color:black}.large .criterion-meta,.large .quality-list li,.large .demo-banner,.large .score-copy{font-size:1rem}[dir="rtl"] .primary{text-align:right}[dir="rtl"] .toggle input{right:auto;left:0}[dir="rtl"] .meter{direction:ltr}@media(max-width:500px){#handoff,#analyze,#results{padding:24px 18px}.score-summary{flex-wrap:wrap}.criterion-card{padding:16px}}
