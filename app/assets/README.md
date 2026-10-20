@@ -1,0 +1,1 @@
+Static images and icons for the MindDial AI web app go here (e.g., favicons, illustrations). No clock-drawing images, participant data, or model weights should ever be placed in this folder — keep those in `restricted_data/` references only, never committed to this public app folder.
