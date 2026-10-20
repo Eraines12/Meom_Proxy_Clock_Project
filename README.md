@@ -14,7 +14,7 @@ MindDial AI is an educational AI-assisted clock-drawing screening-support protot
 
 ## About MindDial AI
 
-This repository, formerly tracked as `Meom_Proxy_Clock_Project`, is the main GitHub home for **MindDial AI**: the live web app, the AI backend/model research, the development notebooks, and the evaluation documentation behind it. The scoring framework is based on the four-point method summarized by [Palsetia et al. (2018)](https://pmc.ncbi.nlm.nih.gov/articles/PMC5795671/). The project documents data preparation, feature scoring, baseline training, and aggregate evaluation; it does not establish diagnosis, screening performance, or clinical validity.
+This repository, formerly tracked as `Meom_Proxy_Clock_Project`, is the main GitHub home for **MindDial AI**: the live web app, the AI backend/model research, the development notebooks, and the evaluation documentation behind it. The scoring framework is based on the four-point method summarized by [Palsetia et al. (2018)](https://pmc.ncbi.nlm.nih.gov/articles/PMC5795671/). **For the full app description, workflow, adapter details, and current status, see [`app/README.md`](app/README.md).**
 
 ```text
 MindDial AI
@@ -201,6 +201,7 @@ Each experiment must report, at minimum, the following to stay comparable to the
 | Explore | Contents |
 | --- | --- |
 | [🌐 Live app source](app/) | HTML/CSS/JS for the public MindDial AI web app (mirrors the Netlify deployment) |
+| [📘 App README](app/README.md) | Detailed app description, workflow, adapter, and current implementation status |
 | [🔌 Backend integration notes](app/INFERENCE.md) | The response contract for `analyzeClockDrawing(file)` and what real ResNet50 inference still requires |
 | [📚 Documentation](docs/) | Project reports, data documentation, evaluation, and model card |
 | [🛣️ Model improvement roadmap](docs/Model_Improvement_Roadmap.md) | Planned experiments for improving accuracy and reducing false positives |
