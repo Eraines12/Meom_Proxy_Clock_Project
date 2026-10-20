@@ -14,53 +14,27 @@ MindDial AI is an educational AI-assisted clock-drawing screening-support protot
 
 ## About MindDial AI
 
-This repository, formerly tracked as `Meom_Proxy_Clock_Project`, is the main GitHub home for **MindDial AI**: the live web app, the AI backend/model research, the development notebooks, and the evaluation documentation behind it. The scoring framework is based on the four-point method summarized by [Palsetia et al. (2018)](https://pmc.ncbi.nlm.nih.gov/articles/PMC5795671/). **For the full app description, workflow, adapter details, and current status, see [`app/README.md`](app/README.md).**
+This repository, formerly tracked as `Meom_Proxy_Clock_Project`, is the GitHub home for **MindDial AI**: the live web app, the AI model research, the training notebooks, and the evaluation docs behind it. Scoring is based on the four-point method from [Palsetia et al. (2018)](https://pmc.ncbi.nlm.nih.gov/articles/PMC5795671/). **Full app details: [`app/README.md`](app/README.md).**
 
-```text
-MindDial AI
- ↓
-Live Web App            → app/
- ↓
-AI Backend / Model      → model/, src/
- ↓
-Development & Training Notebooks → notebooks/
- ↓
-Evaluation / Documentation       → docs/, results/
-```
+| Part | Where |
+| --- | --- |
+| Live web app | [`app/`](app/) |
+| AI model / research code | [`model/`](model/), [`src/`](src/) |
+| Training notebooks | [`notebooks/`](notebooks/) |
+| Evaluation & docs | [`docs/`](docs/), [`results/`](results/) |
 
 ## How It Works
 
-```text
-Open MindDial AI                         (implemented)
- ↓
-Choose Language                          (implemented)
- ↓
-Accessibility Settings                   (implemented)
- ↓
-Demographic Form                         (implemented — never sent to the model)
- ↓
-Upload Clock Drawing                     (implemented — preview, replace, remove)
- ↓
-Image Quality Check                      (NOT implemented — shows "Not checked")
- ↓
-AI Analyzes 4 Criteria                   (NOT implemented — "AI model connection pending")
- ↓
-Model Confidence + Threshold Decision    (pending a connected backend)
- ↓
-PASS / FAIL / NEEDS REVIEW               (pending a connected backend)
- ↓
-Final 0–4 Score                          (pending a connected backend)
- ↓
-Age-Group Context (planned)
- ↓
-Result Explanation (planned — "Explain My Results" placeholder only)
- ↓
-General Brain-Health Information (planned)
- ↓
-Optional AI Assistant (planned)
-```
+| Step | Status |
+| --- | --- |
+| Choose language, accessibility settings | ✅ Implemented |
+| Demographic form | ✅ Implemented — never sent to the model |
+| Upload clock drawing | ✅ Implemented — preview, replace, remove |
+| Image quality check | ⏳ Not implemented — shows "Not checked" |
+| AI analyzes 4 criteria → PASS/FAIL/NEEDS REVIEW → 0–4 score | ⏳ Pending a connected backend — shows "AI model connection pending" |
+| Age-group context, result explanation, brain-health info, AI assistant | 📋 Planned |
 
-The app ([source in `app/`](app/), deployed at [mind-dial.netlify.app](https://mind-dial.netlify.app)) fully implements the setup, accessibility, demographic, and upload steps above. **No simulated or demo scores are shown.** Until a real inference backend is configured, the AI-results screen displays **"AI model connection pending — no score has been generated"** and the image-quality checks (sharpness, full clock visibility, lighting) all read **"Not checked"** — image decoding/file validation only confirms the file is a readable JPEG/PNG/WebP, it does not assess drawing quality. See [Current AI Model](#current-ai-model) and [`app/INFERENCE.md`](app/INFERENCE.md) for what connecting the real model still requires.
+The app ([source](app/), deployed at [mind-dial.netlify.app](https://mind-dial.netlify.app)) fully implements setup, accessibility, demographics, and upload. **No simulated or demo scores are shown** — until a real backend is connected, results read "AI model connection pending" and quality checks read "Not checked." See [Current AI Model](#current-ai-model) and [`app/INFERENCE.md`](app/INFERENCE.md) for what's still needed.
 
 ## Four Scoring Criteria
 
