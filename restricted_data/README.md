@@ -6,8 +6,4 @@ These files remain in controlled storage and are not linked from this repository
 
 ## Restricted data location
 
-These materials are stored in a permission-controlled Google Drive folder, intentionally excluded from GitHub:
-
-https://drive.google.com/drive/folders/1nWsTf1L2GvqZSebXE-V1ljhXtoWJXP53
-
-Access is limited to authorized users only. This link does not grant redistribution rights, does not change Drive sharing permissions, and is not a substitute for obtaining authorized NHATS access. Do not download or upload restricted data through this link except as already permitted by the project's data-use terms.
+Restricted project data is maintained in permission-controlled storage and is intentionally excluded from this public repository. Access is limited to authorized project members only, governed by the project's existing data-use terms and the [NHATS Conditions of Use](https://www.nhats.org/conditions-of-use). This repository does not publish the storage location, and publishing it here would not itself grant redistribution rights or change access permissions. Authorized team members should request the current access details through existing project channels rather than from this file.

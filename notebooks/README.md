@@ -1,6 +1,6 @@
-# Notebooks
+# Development & Training Notebooks
 
-The project used preprocessing and EDA/baseline-training notebooks. Their documented roles are described in the [Final Data Report](../docs/Final_Data_Report.md) and [Experiment Run Summary](../docs/Experiment_Run_Summary.md).
+These are development, preprocessing, training, and evaluation notebooks — not the MindDial AI demo. The live demo is the web app at [mind-dial.netlify.app](https://mind-dial.netlify.app) (source in [`app/`](../app/)). The project used preprocessing and EDA/baseline-training notebooks. Their documented roles are described in the [Final Data Report](../docs/Final_Data_Report.md) and [Experiment Run Summary](../docs/Experiment_Run_Summary.md).
 
 | Notebook | Role |
 | --- | --- |
