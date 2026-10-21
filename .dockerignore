@@ -1,0 +1,8 @@
+*
+!backend/
+!backend/**
+!app/
+!app/**
+**/__pycache__
+**/*.pyc
+**/.pytest_cache

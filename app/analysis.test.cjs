@@ -6,7 +6,7 @@ const source = fs.readFileSync(__dirname + '/analysis.js', 'utf8');
 function adapter(fetch, configured = false) {
   const context = vm.createContext({ fetch, URL, FormData, AbortController, setTimeout, clearTimeout,
     location: { href: 'https://minddial.test/', origin: 'https://minddial.test' } });
-  vm.runInContext(configured ? source.replace("endpoint: ''", "endpoint: '/api/analyze'") : source, context);
+  vm.runInContext(configured ? source : source.replace("endpoint: '/api/analyze'", "endpoint: ''"), context);
   return vm.runInContext('({ analyzeClockDrawing, validateAnalysis, decide, validateFile })', context);
 }
 const file = new Blob(['image'], { type: 'image/png' });
@@ -51,4 +51,12 @@ test('file guard rejects wrong types, empty and oversized files', () => {
   const api = adapter();
   for (const file of [{ type: 'image/svg+xml', size: 10 }, { type: 'image/png', size: 0 },
     { type: 'image/png', size: 10485761 }]) assert.throws(() => api.validateFile(file));
+});
+
+
+test('configured but unavailable route remains pending without a score', async () => {
+  for (const response of [{ ok: false, status: 404 },
+    { ok: false, status: 503, json: async () => ({ detail: 'notConnected' }) }]) {
+    await assert.rejects(adapter(async () => response, true).analyzeClockDrawing(file), /notConnected/);
+  }
 });

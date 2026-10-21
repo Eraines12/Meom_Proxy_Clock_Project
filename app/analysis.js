@@ -1,6 +1,6 @@
-// Deployment configuration only. No endpoint means no upload and no score.
+// Same-origin backend route. Missing/unready service means no score.
 // Keep same-origin: route this path through a server-side proxy when needed.
-const analysisConfig = Object.freeze({ endpoint: '', timeoutMs: 30000 });
+const analysisConfig = Object.freeze({ endpoint: '/api/analyze', timeoutMs: 30000 });
 // Provisional research cutoffs, not validated clinical settings.
 const thresholds = Object.freeze({ closedCircle: 0.90, all12Numbers: 0.80, numberPosition: 0.75, correctHands: 0.80 });
 const criterionKeys = Object.freeze(Object.keys(thresholds));
@@ -40,11 +40,17 @@ async function analyzeClockDrawing(file) {
   try {
     const response = await fetch(endpoint, { method: 'POST', body, signal: controller.signal,
       credentials: 'omit', cache: 'no-store', redirect: 'error', referrerPolicy: 'no-referrer' });
-    if (!response.ok) throw new Error('requestFailed');
+    if (!response.ok) {
+      if (response.status === 404) throw new Error('notConnected');
+      if (response.status === 413) throw new Error('uploadTooLarge');
+      let detail;
+      try { detail = (await response.json()).detail; } catch { /* non-JSON failure */ }
+      throw new Error(detail === 'notConnected' ? 'notConnected' : 'requestFailed');
+    }
     return validateAnalysis(await response.json());
   } catch (error) {
     if (error.name === 'AbortError') throw new Error('timedOut');
-    if (error.message === 'invalidResponse') throw error;
+    if (['invalidResponse', 'notConnected', 'uploadTooLarge'].includes(error.message)) throw error;
     throw new Error('requestFailed');
   } finally { clearTimeout(timer); }
 }

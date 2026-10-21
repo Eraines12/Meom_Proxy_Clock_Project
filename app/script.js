@@ -44,6 +44,9 @@ const ar = { start: 'إعداد تجربتك ←', research: 'نموذج بحث�
 const fr = { start: 'Configurez votre expérience →', research: 'PROTOTYPE DE RECHERCHE ÉDUCATIVE', interface: "Langue de l'interface", headline: 'Un début confortable.<br>Une étape <em>réfléchie.</em>', lead: 'Bienvenue sur MindDial AI. Commençons par une configuration simple.', setupStep: 'Votre configuration', testStep: "Téléverser l'image", reviewStep: 'Résultats de l’IA', details: 'À propos de vous', age: 'Âge (années)', education: "Niveau d'éducation", preferred: 'Langue préférée', display: "Préférences d'affichage", large: 'Texte agrandi', contrast: 'Contraste élevé', color: 'Mode adapté au daltonisme', researchOnly: 'Pour l’apprentissage et la recherche', disclaimer: "Ceci est un prototype éducatif/de recherche d'aide au dépistage, et non un dispositif médical de diagnostic. Il ne peut pas diagnostiquer la démence ou toute autre condition de santé.", agree: "Je comprends ces limites et j'accepte volontairement de continuer avec ce prototype éducatif.", continue: "Continuer vers l'envoi de l'image", ready: 'CONFIGURATION TERMINÉE', readyTitle: 'Vous êtes prêt.', back: 'Retour à ma configuration', reset: 'Effacer mes données et recommencer', uploadTitle: 'Téléversez votre dessin d’horloge', chooseFile: 'Choisir une image', analyzeBtn: "Analyser le dessin", resultsTitle: "Résultats de l'IA", critClosed: 'Cercle fermé', critNumbers: 'Les 12 chiffres', critPosition: 'Position correcte des chiffres', critHands: 'Aiguilles correctes', confidence: 'Confiance du modèle', threshold: 'Seuil', pass: 'RÉUSSI', fail: 'ÉCHOUÉ', review: 'À VÉRIFIER', finalScore: 'Score final', outOf4: 'sur 4', newTest: 'Analyser un autre dessin', backSetup: "Retour à l'accueil" };
 
 Object.assign(en, {
+ critClosed: 'Closed Circle', critNumbers: 'All 12 Numbers', critPosition: 'Correct Number Position', critHands: 'Correct Clock Hands',
+ confidence: 'Model confidence', threshold: 'Threshold', pass: 'PASS', fail: 'FAIL', outOf4: 'of 4',
+ uploadTooLarge: 'This hosting route supports images smaller than 4 MB. Choose a smaller image.',
  phaseNote: 'No AI score is generated until a real model service is connected.',
  handoffText: 'Your preferences are ready. Next, upload your clock drawing.',
  uploadIntro: 'Choose JPEG, PNG or WebP, up to 10 MB. Preview stays in memory. Analyze sends only the drawing when a backend is configured.',
@@ -68,6 +71,16 @@ for (const dict of [es, vi, zh, ar, fr]) {
  dict.uploadIntro = en.uploadIntro;
  dict.privacy = en.privacy;
 }
+Object.assign(en, {"setupStep":"Setup","testStep":"Clock Test","testSmall":"Draw or use paper","analysisStep":"Analysis","analysisSmall":"Confirm and analyze","reviewStep":"Results","continue":"Continue to Clock Test","continue2":"Start Clock Test","handoffText":"Your preferences are ready. Next, draw a clock or use blank paper.","uploadTitle":"Confirm your drawing","stepLabel2":"STEP 03 / ANALYSIS","stepLabel3":"STEP 04 / RESULTS","clockStepLabel":"STEP 02 / CLOCK TEST","clockTitle":"Clock Test","drawingInstructions":"Draw a clock, put in all the numbers, and set the hands to 11:10.","canvasHelp":"Use a mouse, touch, or stylus on the blank area. Keyboard: arrow keys move the pen cursor; Space starts or stops drawing. You can also draw on paper and upload a photo below. There is no timer.","pen":"Pen","eraser":"Eraser","undo":"Undo","clearCanvas":"Clear / Reset drawing","submitDrawing":"Submit Drawing","paperOption":"Prefer paper? Upload / Take Photo","paperHelp":"Follow the same instructions on blank paper. Choose an image or take a photo, then confirm the preview before analysis.","takePhoto":"Take Photo","confirmPreview":"Confirm that this is the drawing you want to analyze.","backToSetup":"Back to Clock Test","removeImage":"Remove image and return to Clock Test","previewAlt":"Clock drawing preview for confirmation","drawingChanged":"Drawing updated. Submit when ready.","drawingCleared":"Drawing cleared. The area is blank.","emptyDrawing":"Draw a clock or upload an image before continuing.","exportFailed":"Unable to prepare the drawing. Please try again.","keyboardOn":"Keyboard pen down. Arrow keys draw; Space lifts the pen.","keyboardOff":"Keyboard pen lifted. Arrow keys move; Space draws."});
+// Replace obsolete upload-only journey text in partial locales with explicit English fallback.
+for (const dict of [es, vi, zh, ar, fr]) {
+ for (const key of ['testStep','testSmall','continue','continue2','handoffText','uploadTitle','stepLabel2','stepLabel3','backToSetup','removeImage']) delete dict[key];
+}
+Object.assign(es, { testStep: 'Prueba del reloj', continue: 'Continuar a la prueba del reloj', clockTitle: 'Prueba del reloj', drawingInstructions: 'Dibuja un reloj, incluye todos los números y coloca las manecillas a las 11:10.', pen: 'Lápiz', eraser: 'Borrador', undo: 'Deshacer', clearCanvas: 'Borrar / Reiniciar dibujo', submitDrawing: 'Enviar dibujo', takePhoto: 'Tomar foto' });
+Object.assign(vi, {"clockTitle":"Bài kiểm tra vẽ đồng hồ","testStep":"Bài kiểm tra đồng hồ","continue":"Tiếp tục bài kiểm tra đồng hồ","drawingInstructions":"Vẽ một chiếc đồng hồ, điền tất cả các số và đặt kim chỉ 11:10.","pen":"Bút","eraser":"Tẩy","undo":"Hoàn tác","clearCanvas":"Xóa / Vẽ lại","submitDrawing":"Gửi bản vẽ","takePhoto":"Chụp ảnh"});
+Object.assign(zh, {"clockTitle":"画钟测试","testStep":"画钟测试","continue":"继续画钟测试","drawingInstructions":"请画一个钟，写上所有数字，并将指针设为11点10分。","pen":"画笔","eraser":"橡皮擦","undo":"撤销","clearCanvas":"清空 / 重画","submitDrawing":"提交绘图","takePhoto":"拍照"});
+Object.assign(ar, {"clockTitle":"اختبار رسم الساعة","testStep":"اختبار الساعة","continue":"المتابعة إلى اختبار الساعة","drawingInstructions":"ارسم ساعة، واكتب جميع الأرقام، واضبط العقارب على 11:10.","pen":"قلم","eraser":"ممحاة","undo":"تراجع","clearCanvas":"مسح / إعادة الرسم","submitDrawing":"إرسال الرسمة","takePhoto":"التقاط صورة"});
+Object.assign(fr, {"clockTitle":"Test de l’horloge","testStep":"Test de l’horloge","continue":"Continuer vers le test de l’horloge","drawingInstructions":"Dessinez une horloge, inscrivez tous les chiffres et placez les aiguilles à 11 h 10.","pen":"Stylo","eraser":"Gomme","undo":"Annuler","clearCanvas":"Effacer / Recommencer","submitDrawing":"Envoyer le dessin","takePhoto":"Prendre une photo"});
 const translations = { en, es, vi, zh, ar, fr };
 
 const education = {
@@ -81,7 +94,7 @@ const languages = {
 const eduValues = ['', 'none', 'primary', 'secondary', 'college-vocational', 'bachelors', 'postgraduate', 'undisclosed'];
 const langValues = ['', 'en', 'es', 'vi', 'zh', 'ar', 'fr', 'other', 'undisclosed'];
 
-let locale = 'en', setup = null, lastResults = null;
+let locale = 'en', setup = null, lastResults = null, modelReady = false;
 
 function options(id, labels, values) {
   const current = $(id).value;
@@ -102,12 +115,14 @@ function translate() {
     el.innerHTML = dict[el.dataset.t] || en[el.dataset.t] || '';
     el.lang = dict[el.dataset.t] ? locale : 'en';
   });
-  document.querySelector('.demo-banner').hidden = Boolean(analysisConfig.endpoint);
+  document.querySelector('.demo-banner').hidden = modelReady;
   options('education', education[locale] || education.en, eduValues);
   options('preferred', languages[locale] || languages.en, langValues);
   $('age').placeholder = locale === 'es' ? 'p. ej., 68' : 'e.g. 68';
   $('error').textContent = '';
-  $('upload-status').textContent = uploadStatus ? t(uploadStatus) : '';
+  status(uploadStatus);
+  $('drawing-canvas').setAttribute('aria-label', t('clockTitle'));
+  $('drawing-canvas').lang = translations[locale].clockTitle ? locale : 'en';
   document.querySelector('#dropzone img')?.setAttribute('alt', t('previewAlt'));
   if (setup) renderSummary();
   if (lastResults) renderResults(lastResults);
@@ -122,6 +137,15 @@ for (const id of ['large', 'contrast', 'color']) {
     document.body.classList.toggle(id, $(id).checked);
     try { localStorage.setItem('minddial-display-' + id, String($(id).checked)); } catch { /* storage unavailable */ }
   });
+}
+
+async function refreshModelConnection() {
+  try {
+    const response = await fetch('/api/health', { cache: 'no-store', credentials: 'omit',
+      redirect: 'error', signal: AbortSignal.timeout(5000) });
+    modelReady = response.ok && (await response.json()).ready === true;
+  } catch { modelReady = false; }
+  document.querySelector('.demo-banner').hidden = modelReady;
 }
 
 function t(key) { return (translations[locale] || en)[key] || en[key] || key; }
@@ -140,16 +164,18 @@ function renderSummary() {
 }
 
 function showStep(id) {
-  for (const s of ['setup', 'handoff', 'analyze', 'results']) {
+  for (const s of ['setup', 'handoff', 'clock-test', 'analyze', 'results']) {
     if ($(s)) $(s).hidden = (s !== id);
   }
-  const map = { setup: 1, handoff: 1, analyze: 2, results: 3 };
+  const map = { setup: 1, handoff: 1, 'clock-test': 2, analyze: 3, results: 4 };
   document.querySelectorAll('.steps li').forEach((li, i) => {
     const n = i + 1;
     li.classList.toggle('active', n === map[id]);
+    if (n === map[id]) li.setAttribute('aria-current', 'step'); else li.removeAttribute('aria-current');
     li.classList.toggle('done', n < map[id]);
   });
   if ($(id)) $(id).focus();
+  if (id === 'analyze') refreshModelConnection();
 }
 
 $('setup-form').addEventListener('submit', e => {
@@ -169,30 +195,31 @@ $('setup-form').addEventListener('submit', e => {
     accessibility: Object.fromEntries(['large', 'contrast', 'color'].map(id => [id, $(id).checked]))
   });
   renderSummary();
-  showStep('handoff');
+  showStep('clock-test');
 });
 
 $('back').addEventListener('click', () => showStep('setup'));
 $('reset').addEventListener('click', () => {
   setup = null;
-  clearDrawing();
+  clearDrawing(); resetCanvas();
   $('reason').value = '';
   $('age').value = ''; $('education').value = ''; $('preferred').value = ''; $('consent').checked = false;
   $('summary').replaceChildren();
   showStep('setup');
 });
 
-$('to-upload').addEventListener('click', () => showStep('analyze'));
-$('back-to-handoff').addEventListener('click', () => showStep('handoff'));
+$('to-upload').addEventListener('click', () => showStep('clock-test'));
+$('back-to-handoff').addEventListener('click', () => { clearDrawing(); showStep('clock-test'); });
+$('test-back').addEventListener('click', () => showStep('setup'));
 
 let selectedFile = null, previewUrl = null, uploadStatus = '', busy = false, selection = 0;
-function status(key) { uploadStatus = key; $('upload-status').textContent = key ? t(key) : ''; }
+function status(key) { uploadStatus = key; $('upload-status').textContent = key ? t(key) : ''; $('drawing-status').textContent = key ? t(key) : ''; }
 function clearDrawing() {
   selection++;
   selectedFile = null; lastResults = null;
   if (previewUrl) URL.revokeObjectURL(previewUrl);
   previewUrl = null;
-  $('file-input').value = '';
+  $('file-input').value = ''; $('camera-input').value = '';
   $('dropzone').classList.remove('has-image');
   $('dropzone').querySelector('img')?.remove();
   $('criteria-list').replaceChildren();
@@ -205,13 +232,12 @@ function clearDrawing() {
 function resetDropzone() { clearDrawing(); }
 function setBusy(value) {
   busy = value;
-  for (const id of ['file-input', 'remove-image', 'back-to-handoff', 'reset']) $(id).disabled = value;
+  for (const id of ['file-input', 'camera-input', 'remove-image', 'back-to-handoff', 'reset']) $(id).disabled = value;
   $('analyze-btn').disabled = value || !selectedFile;
   $('analyze').setAttribute('aria-busy', String(value));
 }
-$('remove-image').addEventListener('click', clearDrawing);
-$('file-input').addEventListener('change', async e => {
-  const file = e.target.files?.[0];
+$('remove-image').addEventListener('click', () => { clearDrawing(); showStep('clock-test'); });
+async function selectImage(file) {
   if (!file || busy) return;
   clearDrawing();
   const token = selection;
@@ -228,19 +254,21 @@ $('file-input').addEventListener('change', async e => {
     img.alt = t('previewAlt');
     $('dropzone').prepend(img); $('dropzone').classList.add('has-image');
     $('analyze-btn').disabled = false; $('remove-image').disabled = false;
-    status('');
+    status(''); showStep('analyze');
   } catch (error) {
     if (url) URL.revokeObjectURL(url);
     if (token === selection) status(['invalidType','invalidSize'].includes(error.message) ? error.message : 'invalidImage');
   }
-});
+}
+for (const id of ['file-input', 'camera-input']) $(id).addEventListener('change', e => selectImage(e.target.files?.[0]));
 $('analyze-btn').addEventListener('click', async () => {
   if (!selectedFile || busy) return;
   setBusy(true); status('analyzing');
   try {
     const result = await analyzeClockDrawing(selectedFile);
+    modelReady = true; document.querySelector('.demo-banner').hidden = true;
     lastResults = result; renderResults(result); status(''); showStep('results');
-  } catch (error) { status(en[error.message] ? error.message : 'requestFailed'); }
+  } catch (error) { if (error.message === 'notConnected') { modelReady = false; document.querySelector('.demo-banner').hidden = false; } status(en[error.message] ? error.message : 'requestFailed'); }
   finally { setBusy(false); }
 });
 
@@ -270,8 +298,8 @@ function renderResults(result) {
 
 $('to-upload-again').addEventListener('click', () => {
   if ($('file-input')) $('file-input').value = '';
-  resetDropzone();
-  showStep('analyze');
+  resetDropzone(); resetCanvas();
+  showStep('clock-test');
 });
 $('to-setup-again').addEventListener('click', () => showStep('setup'));
 

@@ -57,3 +57,6 @@ __pycache__/
 *.pyc
 *.egg-info/
 .pytest_cache/
+
+# Interrupted private model downloads
+*.keras.part

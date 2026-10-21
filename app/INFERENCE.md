@@ -1,7 +1,17 @@
+# Connected inference service
+
+The same-origin route is now configured as `/api/analyze`. See
+[backend setup](../backend/README.md) for the real saved ResNet50 loader,
+preprocessing, private model download, deployment and tests. The Netlify proxy
+returns pending until its actual backend origin and shared token are set.
+The trained checkpoint must be supplied on the Python host. The original
+frontend contract and safeguards below remain applicable, except that the
+endpoint is no longer shipped empty and a real service is now implemented.
+
 # MindDial frontend integration
 
 `analysis.js` owns the inference boundary. Set its deployment-only `endpoint`
-to a same-origin route such as `/api/analyze`. The shipped empty endpoint makes
+to a same-origin route such as `/api/analyze`. An explicitly empty endpoint makes
 no network request and returns `notConnected`; no demo scores are available.
 Do not put service secrets or weights in the frontend.
 
@@ -41,8 +51,9 @@ training preprocessing (orientation, crop, size, normalization), verified output
 mapping and probability conversion, server-side file/decode/size checks, request
 limits and privacy policy. Verify the end-to-end service against held-out data,
 including open circles and threshold calibration, before claiming performance.
-No model service, weights, quality detector, explanation generator, or medical
-interpretation has been implemented here. Image format decoding is not an image
+The model service is implemented in `backend/`; private weights stay outside
+the repository. No quality detector, explanation generator, or medical
+interpretation is implemented here. Image format decoding is not an image
 quality check; sharpness, framing and lighting remain Not checked.
 
 English is the fallback dictionary. Spanish has broader coverage; Vietnamese,

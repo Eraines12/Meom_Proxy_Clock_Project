@@ -45,3 +45,15 @@
 
 /* Accessible upload controls and bidirectional results. */
 .dropzone:focus-within{outline:3px solid var(--accent);outline-offset:4px}.file-btn{cursor:pointer}#upload-status{overflow-wrap:anywhere}.criterion-card header{flex-wrap:wrap}.review-warning{color:var(--ink);border-inline-start:3px solid var(--accent);padding-inline-start:12px}.color .badge.pass,.color .badge.fail{background:#eef4fa;color:#173858;border:1px solid currentColor}.contrast .demo-banner{background:white;color:black;border-color:black}.large .criterion-meta,.large .quality-list li,.large .demo-banner,.large .score-copy{font-size:1rem}[dir="rtl"] .primary{text-align:right}[dir="rtl"] .toggle input{right:auto;left:0}[dir="rtl"] .meter{direction:ltr}@media(max-width:500px){#handoff,#analyze,#results{padding:24px 18px}.score-summary{flex-wrap:wrap}.criterion-card{padding:16px}}
+
+/* Blank drawing surface stays white so exported images match the preview. */
+#clock-test{max-width:850px;margin:auto}#clock-test .primary{width:100%;margin:24px 0}
+.drawing-tools,.paper-options{display:flex;flex-wrap:wrap;gap:12px;margin:18px 0}
+.drawing-tools button{min-height:56px;min-width:80px;padding:12px 18px;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:8px}
+.drawing-tools button[aria-pressed=true]{background:var(--ink);color:var(--paper)}
+button:disabled{cursor:not-allowed;opacity:.5}.canvas-wrap{position:relative;width:100%;max-width:800px}
+#drawing-canvas{display:block;width:100%;height:auto;aspect-ratio:1;background:#fff;border:2px solid var(--ink);touch-action:none;cursor:crosshair}
+#pen-cursor{position:absolute;width:16px;height:16px;border:2px solid #1266be;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none;box-shadow:0 0 0 2px white}
+#canvas-help,#drawing-status{line-height:1.7}.paper-options:focus-within{outline:3px solid var(--accent);outline-offset:4px}
+.steps{gap:20px}.steps li{min-width:120px}#clock-test p{overflow-wrap:anywhere}
+@media(max-width:500px){#clock-test{padding:24px 18px}.drawing-tools button{flex:1}.steps{display:grid;grid-template-columns:1fr 1fr}.steps li{min-width:0}.paper-options .file-btn{width:100%;justify-content:center}}
