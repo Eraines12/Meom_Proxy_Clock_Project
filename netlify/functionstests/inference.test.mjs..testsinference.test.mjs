@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import handler from './inference.mjs';
+import handler from '../functions/inference.mjs';
 
 test('missing backend configuration returns pending, without a score', async () => {
   delete process.env.MINDDIAL_BACKEND_ORIGIN;
