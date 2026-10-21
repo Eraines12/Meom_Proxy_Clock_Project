@@ -99,7 +99,7 @@ validation is not a sharpness, lighting or complete-clock check.
 ```sh
 python -m pip install -r backend/requirements-test.txt
 python -m pytest backend -q
-node --test app/analysis.test.cjs netlify/functions/inference.test.mjs
+node --test app/analysis.test.cjs netlify/tests/inference.test.mjs
 ```
 
 The real-checkpoint test runs when `MINDDIAL_MODEL_PATH` is set. It sends only a
