@@ -1,0 +1,15 @@
+{
+  "modelVersion": "resnet50_v2_20260929T232102Z_1e7339",
+  "driveFileId": "1WCzLHA0pu7t0NOshVSxa1_TbgHXbMXBK",
+  "filename": "Clock_Drawing_ResNet50_Model.keras",
+  "sizeBytes": 95110508,
+  "savedKerasVersion": "3.13.2",
+  "sha256": "503e0661b90e1606120fbfe6c1f37b3c007d130fc6094aaf7bb7e0d2c9c4ad51",
+  "notebookUploadMd5": "cc6f74487d8db4aaa2047c6d4bd5e2dc",
+  "sourceNotebookId": "1Khwo2v37yo7fYTenuyDIl86uj6aA3RUh",
+  "inputShape": [224, 224, 3],
+  "inputRange": [0, 255],
+  "preprocessingInGraph": true,
+  "outputOrder": ["closedCircle", "numberPosition", "all12Numbers", "correctHands"],
+  "historicalEvaluationThreshold": 0.5
+}
