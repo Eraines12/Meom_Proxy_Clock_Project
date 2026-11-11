@@ -1,6 +1,6 @@
 # 🧠 MindDial AI
 
-[Launch MindDial AI](https://mind-dial.netlify.app/)
+[**🧠 Launch MindDial AI**](https://mind-dial.netlify.app/)
 
 > AI-Assisted Clock Drawing Cognitive Screening
 
