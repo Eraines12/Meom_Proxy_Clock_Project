@@ -86,6 +86,64 @@ Object.assign(en, { ageGateTitle: 'Age requirement', ageConfirm: 'I confirm that
 Object.assign(es, { ageGateTitle: 'Requisito de edad', ageConfirm: 'Confirmo que tengo 18 años o más', ageGateHelp: 'Esta evaluación es solo para adultos de 18 años o más. Debes confirmarlo antes de dibujar, subir o analizar un reloj.', ageHelp: 'Introduce un número entero entre 18 y 120.', ageUnder18: 'Debes tener 18 años o más para usar esta evaluación.', ageConfirmRequired: 'Confirma que tienes 18 años o más para continuar.', ageInvalid: 'Introduce una edad válida entre 18 y 120.' });
 Object.assign(vi, { ageGateTitle: 'Yêu cầu về độ tuổi', ageConfirm: 'Tôi xác nhận rằng tôi từ 18 tuổi trở lên', ageGateHelp: 'Bài đánh giá này chỉ dành cho người từ 18 tuổi trở lên. Bạn phải xác nhận trước khi vẽ, tải lên hoặc phân tích đồng hồ.', ageHelp: 'Nhập một số nguyên từ 18 đến 120.', ageUnder18: 'Bạn phải từ 18 tuổi trở lên để sử dụng bài đánh giá này.', ageConfirmRequired: 'Hãy xác nhận bạn từ 18 tuổi trở lên để tiếp tục.', ageInvalid: 'Vui lòng nhập tuổi là số nguyên từ 18 đến 120.' });
 Object.assign(zh, { ageGateTitle: '年龄要求', ageConfirm: '我确认我已年满 18 岁', ageGateHelp: '本评估仅限 18 岁及以上的成年人使用。在绘制、上传或分析钟表之前，您必须先确认。', ageHelp: '请输入 18 至 120 之间的整数。', ageUnder18: '您必须年满 18 岁才能使用本评估。', ageConfirmRequired: '请确认您已年满 18 岁后再继续。', ageInvalid: '请输入 18 至 120 之间的整数年龄。' });
+Object.assign(en, {
+  practiceStart: 'Practice with the tools first', practiceEnd: 'Finish practice and start the real assessment',
+  practiceBanner: 'Practice mode: nothing you draw here is saved, uploaded or analyzed. Try the pen, eraser and undo.',
+  practiceEnded: 'Practice finished. The drawing area is blank for your real clock.',
+  practiceStarted: 'Practice mode on. Try the pen, eraser and undo. Submit is turned off.',
+  previewControls: 'Preview controls', zoomIn: 'Zoom in', zoomOut: 'Zoom out', zoomReset: 'Reset zoom',
+  rotateLeft: 'Rotate left', rotateRight: 'Rotate right', replaceImage: 'Replace image',
+  rotatedStatus: 'Image rotated. This rotated image is the one that will be analyzed.',
+  rotateFailed: 'The image could not be rotated. Choose another image.',
+  retryAnalysis: 'Retry analysis', retryHint: 'Your drawing and setup are kept. Retry without drawing or uploading again.',
+  resultDrawing: 'Drawing analyzed', resultDrawingAlt: 'The clock drawing that was analyzed',
+  explainIntro: 'Each Why? explains the result using the number the model reported for that feature.',
+  why: 'Why?',
+  whatClosed: 'This checks whether the outer circle is closed.', whatNumbers: 'This checks whether all 12 numbers are present.',
+  whatPosition: 'This checks whether the numbers are placed correctly around the clock.',
+  whatHands: 'This checks whether the hands show 11:10.',
+  whyPass: 'The model reported {pct}% confidence, which meets the {threshold}% cutoff, so it scored 1 (PASS).',
+  whyFail: 'The model reported {pct}% confidence, below the {threshold}% cutoff, so it scored 0 (FAIL).',
+  whyNear: 'This is close to the cutoff, so it is marked Needs Review.',
+  whyLimit: 'The model reports only this number, not where in the drawing it looked.',
+  printResults: 'Print or save results', printTitle: 'MindDial AI results', printDate: 'Date', printScore: 'Final score',
+  printDrawing: 'Submitted drawing', printNote: 'Educational prototype. Not a medical diagnosis. Setup details such as age are not included.',
+  readAloud: 'Read results aloud', stopReading: 'Stop reading',
+  noVoice: 'No built-in voice is available for this language on this device.',
+  speakScore: 'Final score: {score} out of 4.', speaking: 'Reading results aloud.', speechStopped: 'Stopped reading.'
+});
+Object.assign(es, {
+  practiceStart: 'Practicar primero con las herramientas', practiceEnd: 'Terminar la práctica e iniciar la evaluación real',
+  practiceBanner: 'Modo de práctica: nada de lo que dibujes aquí se guarda, se sube ni se analiza. Prueba el lápiz, el borrador y deshacer.',
+  practiceEnded: 'Práctica terminada. El área de dibujo está en blanco para tu reloj real.',
+  practiceStarted: 'Modo de práctica activado. El envío está desactivado.',
+  previewControls: 'Controles de vista previa', zoomIn: 'Acercar', zoomOut: 'Alejar', zoomReset: 'Restablecer zoom',
+  rotateLeft: 'Girar a la izquierda', rotateRight: 'Girar a la derecha', replaceImage: 'Reemplazar imagen',
+  rotatedStatus: 'Imagen girada. Se analizará esta imagen girada.', rotateFailed: 'No se pudo girar la imagen. Elige otra.',
+  retryAnalysis: 'Reintentar análisis', retryHint: 'Se conservan tu dibujo y tu configuración. Reintenta sin dibujar ni subir de nuevo.',
+  resultDrawing: 'Dibujo analizado', resultDrawingAlt: 'El dibujo del reloj que se analizó',
+  explainIntro: 'Cada ¿Por qué? explica el resultado con el número que el modelo informó para esa característica.', why: '¿Por qué?',
+  whatClosed: 'Comprueba si el círculo exterior está cerrado.', whatNumbers: 'Comprueba si están los 12 números.',
+  whatPosition: 'Comprueba si los números están bien colocados alrededor del reloj.', whatHands: 'Comprueba si las manecillas marcan las 11:10.',
+  whyPass: 'El modelo informó {pct}% de confianza, que alcanza el umbral de {threshold}%, así que obtuvo 1 (APROBADO).',
+  whyFail: 'El modelo informó {pct}% de confianza, por debajo del umbral de {threshold}%, así que obtuvo 0 (NO APROBADO).',
+  whyNear: 'Está cerca del umbral, por eso se marca como Revisión necesaria.',
+  whyLimit: 'El modelo solo informa este número, no dónde miró en el dibujo.',
+  printResults: 'Imprimir o guardar resultados', printTitle: 'Resultados de MindDial AI', printDate: 'Fecha', printScore: 'Puntuación final',
+  printDrawing: 'Dibujo enviado', printNote: 'Prototipo educativo. No es un diagnóstico médico. No se incluyen datos de configuración como la edad.',
+  readAloud: 'Leer resultados en voz alta', stopReading: 'Detener lectura',
+  noVoice: 'No hay una voz integrada para este idioma en este dispositivo.',
+  speakScore: 'Puntuación final: {score} de 4.', speaking: 'Leyendo los resultados en voz alta.', speechStopped: 'Lectura detenida.'
+});
+Object.assign(fr, {
+  practiceStart: 'S’entraîner d’abord avec les outils', practiceEnd: 'Terminer l’entraînement et commencer l’évaluation',
+  practiceBanner: 'Mode entraînement : rien de ce que vous dessinez ici n’est enregistré, envoyé ni analysé.',
+  previewControls: 'Contrôles de l’aperçu', zoomIn: 'Agrandir', zoomOut: 'Réduire', zoomReset: 'Réinitialiser le zoom',
+  rotateLeft: 'Pivoter à gauche', rotateRight: 'Pivoter à droite', replaceImage: 'Remplacer l’image',
+  retryAnalysis: 'Réessayer l’analyse', retryHint: 'Votre dessin et votre configuration sont conservés.',
+  why: 'Pourquoi ?', printResults: 'Imprimer ou enregistrer les résultats', readAloud: 'Lire les résultats à voix haute',
+  stopReading: 'Arrêter la lecture', resultDrawing: 'Dessin analysé'
+});
 Object.assign(ar, { ageGateTitle: 'شرط العمر', ageConfirm: 'أؤكد أن عمري 18 عامًا أو أكثر', ageGateHelp: 'هذا التقييم مخصص للبالغين الذين تبلغ أعمارهم 18 عامًا أو أكثر. يجب تأكيد ذلك قبل رسم الساعة أو رفعها أو تحليلها.', ageHelp: 'أدخل عددًا صحيحًا بين 18 و120.', ageUnder18: 'يجب أن يكون عمرك 18 عامًا أو أكثر لاستخدام هذا التقييم.', ageConfirmRequired: 'أكّد أن عمرك 18 عامًا أو أكثر للمتابعة.', ageInvalid: 'يرجى إدخال عمر صحيح بين 18 و120.' });
 Object.assign(fr, { ageGateTitle: 'Condition d’âge', ageConfirm: 'Je confirme avoir 18 ans ou plus', ageGateHelp: 'Cette évaluation est réservée aux adultes de 18 ans ou plus. Vous devez le confirmer avant de dessiner, téléverser ou analyser une horloge.', ageHelp: 'Saisissez un nombre entier entre 18 et 120.', ageUnder18: 'Vous devez avoir 18 ans ou plus pour utiliser cette évaluation.', ageConfirmRequired: 'Confirmez que vous avez 18 ans ou plus pour continuer.', ageInvalid: 'Veuillez saisir un âge entier entre 18 et 120.' });
 
@@ -121,6 +179,7 @@ function translate() {
     el.innerHTML = dict[el.dataset.t] || en[el.dataset.t] || '';
     el.lang = dict[el.dataset.t] ? locale : 'en';
   });
+  document.querySelectorAll('[data-tl]').forEach(el => el.setAttribute('aria-label', t(el.dataset.tl)));
   document.querySelector('.demo-banner').hidden = modelReady;
   options('education', education[locale] || education.en, eduValues);
   options('preferred', languages[locale] || languages.en, langValues);
@@ -130,11 +189,13 @@ function translate() {
   $('drawing-canvas').setAttribute('aria-label', t('clockTitle'));
   $('drawing-canvas').lang = translations[locale].clockTitle ? locale : 'en';
   document.querySelector('#dropzone img')?.setAttribute('alt', t('previewAlt'));
+  $('result-image').alt = t('resultDrawingAlt');
+  updateSpeechAvailability();
   if (setup) renderSummary();
   if (lastResults) renderResults(lastResults);
 }
 
-$('locale').addEventListener('change', e => { locale = e.target.value; translate(); });
+$('locale').addEventListener('change', e => { locale = e.target.value; stopSpeaking(); translate(); });
 
 for (const id of ['large', 'contrast', 'color']) {
   try { $(id).checked = localStorage.getItem('minddial-display-' + id) === 'true'; } catch { /* storage unavailable */ }
@@ -171,6 +232,8 @@ function renderSummary() {
 
 function showStep(id) {
   if (!setup && ['clock-test', 'analyze', 'results'].includes(id)) id = 'setup';
+  if (id !== 'clock-test' && typeof endPractice === 'function') endPractice();
+  if (id !== 'results') stopSpeaking();
   for (const s of ['setup', 'handoff', 'clock-test', 'analyze', 'results']) {
     if ($(s)) $(s).hidden = (s !== id);
   }
@@ -223,10 +286,16 @@ $('back-to-handoff').addEventListener('click', () => { clearDrawing(); showStep(
 $('test-back').addEventListener('click', () => showStep('setup'));
 
 let selectedFile = null, previewUrl = null, uploadStatus = '', busy = false, selection = 0;
+let originalFile = null, turns = 0, zoom = 1, resultUrl = null;
+const previewButtons = ['zoom-in', 'zoom-out', 'zoom-reset', 'rotate-left', 'rotate-right', 'replace-image'];
 function status(key) { uploadStatus = key; $('upload-status').textContent = key ? t(key) : ''; $('drawing-status').textContent = key ? t(key) : ''; }
 function clearDrawing() {
   selection++;
-  selectedFile = null; lastResults = null;
+  selectedFile = null; originalFile = null; turns = 0; zoom = 1; lastResults = null;
+  stopSpeaking();
+  if (resultUrl) URL.revokeObjectURL(resultUrl);
+  resultUrl = null; $('result-image').removeAttribute('src'); $('retry-box').hidden = true;
+  updatePreviewTools();
   if (previewUrl) URL.revokeObjectURL(previewUrl);
   previewUrl = null;
   $('file-input').value = ''; $('camera-input').value = '';
@@ -245,7 +314,55 @@ function setBusy(value) {
   for (const id of ['file-input', 'camera-input', 'remove-image', 'back-to-handoff', 'reset']) $(id).disabled = value;
   $('analyze-btn').disabled = value || !selectedFile;
   $('analyze').setAttribute('aria-busy', String(value));
+  updatePreviewTools();
 }
+function updatePreviewTools() {
+  const on = Boolean(selectedFile) && !busy;
+  for (const id of previewButtons) $(id).disabled = !on;
+  $('zoom-out').disabled = !on || zoom <= 1; $('zoom-in').disabled = !on || zoom >= maxZoom;
+  $('zoom-reset').disabled = !on || zoom === 1;
+  $('zoom-level').textContent = Math.round(zoom * 100) + '%';
+  $('dropzone').classList.toggle('zoomed', zoom > 1);
+  const img = $('dropzone').querySelector('img');
+  if (img) img.style.width = zoom > 1 ? zoom * 100 + '%' : '';
+}
+async function orientedBlob(file, count) {
+  if (count === 0) return file;
+  const url = URL.createObjectURL(file);
+  try {
+    const img = new Image(); img.src = url; await img.decode();
+    const size = orientedSize(img.naturalWidth, img.naturalHeight, count);
+    const canvas = document.createElement('canvas'); canvas.width = size.width; canvas.height = size.height;
+    const g = canvas.getContext('2d');
+    g.fillStyle = '#fff'; g.fillRect(0, 0, size.width, size.height);
+    g.translate(size.width / 2, size.height / 2); g.rotate(count * Math.PI / 2);
+    const drawW = count % 2 ? size.height : size.width, drawH = count % 2 ? size.width : size.height;
+    g.drawImage(img, -drawW / 2, -drawH / 2, drawW, drawH);
+    const type = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
+    return await new Promise((resolve, reject) => canvas.toBlob(b => b ? resolve(b) : reject(new Error('rotateFailed')), type, 0.92));
+  } finally { URL.revokeObjectURL(url); }
+}
+// The preview always shows exactly the file that Analyze will send.
+async function rotatePreview(direction) {
+  if (!originalFile || busy) return;
+  const token = selection, next = nextTurns(turns, direction);
+  try {
+    const blob = await orientedBlob(originalFile, next);
+    if (token !== selection) return;
+    validateFile(blob);
+    const url = URL.createObjectURL(blob);
+    $('dropzone').querySelector('img').src = url;
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    previewUrl = url; selectedFile = blob; turns = next;
+    $('retry-box').hidden = true; status('rotatedStatus');
+  } catch { if (token === selection) status('rotateFailed'); }
+}
+$('rotate-left').addEventListener('click', () => rotatePreview(-1));
+$('rotate-right').addEventListener('click', () => rotatePreview(1));
+for (const [id, step] of [['zoom-in', 1], ['zoom-out', -1], ['zoom-reset', 0]]) {
+  $(id).addEventListener('click', () => { zoom = nextZoom(zoom, step); updatePreviewTools(); });
+}
+$('replace-image').addEventListener('click', () => $('file-input').click());
 $('remove-image').addEventListener('click', () => { clearDrawing(); showStep('clock-test'); });
 async function selectImage(file) {
   if (!file || busy || !setup) return;
@@ -260,10 +377,11 @@ async function selectImage(file) {
     await img.decode();
     if (token !== selection) { URL.revokeObjectURL(url); return; }
     if (!img.naturalWidth || !img.naturalHeight || img.naturalWidth * img.naturalHeight > 40000000) throw new Error('invalidImage');
-    previewUrl = url; selectedFile = file;
+    previewUrl = url; selectedFile = file; originalFile = file;
     img.alt = t('previewAlt');
     $('dropzone').prepend(img); $('dropzone').classList.add('has-image');
     $('analyze-btn').disabled = false; $('remove-image').disabled = false;
+    updatePreviewTools();
     status(''); showStep('analyze');
   } catch (error) {
     if (url) URL.revokeObjectURL(url);
@@ -277,10 +395,18 @@ $('analyze-btn').addEventListener('click', async () => {
   try {
     const result = await analyzeClockDrawing(selectedFile);
     modelReady = true; document.querySelector('.demo-banner').hidden = true;
+    if (resultUrl) URL.revokeObjectURL(resultUrl);
+    resultUrl = URL.createObjectURL(selectedFile); $('result-image').src = resultUrl;
+    $('retry-box').hidden = true;
     lastResults = result; renderResults(result); status(''); showStep('results');
-  } catch (error) { if (error.message === 'notConnected') { modelReady = false; document.querySelector('.demo-banner').hidden = false; } status(en[error.message] ? error.message : 'requestFailed'); }
+  } catch (error) {
+    if (error.message === 'notConnected') { modelReady = false; document.querySelector('.demo-banner').hidden = false; }
+    status(en[error.message] ? error.message : 'requestFailed');
+    $('retry-box').hidden = false;
+  }
   finally { setBusy(false); }
 });
+$('retry-analysis').addEventListener('click', () => $('analyze-btn').click());
 
 function renderResults(result) {
   const results = result.criteria.map(r => ({ ...project.criteria.find(c => c.key === r.key), ...r }));
@@ -299,6 +425,10 @@ function renderResults(result) {
       const warning = document.createElement("p"); warning.className = "review-warning";
       warning.textContent = "⚠ " + t("reviewWarning"); card.append(warning);
     }
+    const why = document.createElement('details'); why.className = 'why';
+    const whySummary = document.createElement('summary'); whySummary.textContent = t('why');
+    const whyText = document.createElement('p'); whyText.textContent = explanationText(r, t);
+    why.append(whySummary, whyText); card.append(why);
     return card;
   }));
   const score = results.filter(r => r.status === 'pass').length;
@@ -312,6 +442,47 @@ $('to-upload-again').addEventListener('click', () => {
   showStep('clock-test');
 });
 $('to-setup-again').addEventListener('click', () => showStep('setup'));
+
+function buildPrintReport() {
+  const model = reportModel(lastResults, t, new Date(), locale);
+  const el = (tag, text, cls) => { const n = document.createElement(tag); if (text !== undefined) n.textContent = text; if (cls) n.className = cls; return n; };
+  const img = el('img'); img.src = resultUrl; img.alt = t('resultDrawingAlt');
+  const rows = model.criteria.map(c => { const d = el('div', undefined, 'print-criterion');
+    d.append(el('h3', `${c.label}: ${c.outcome}`), el('p', c.explanation)); return d; });
+  $('print-report').replaceChildren(el('h1', model.title), el('p', `${t('printDate')}: ${model.date}`), img,
+    el('p', `${t('printScore')}: ${model.score} ${t('outOf4')}`, 'print-score'), ...rows,
+    el('p', `${model.modelVersion}`), el('p', t('printNote')));
+}
+$('print-results').addEventListener('click', () => {
+  if (!lastResults || !resultUrl) return;
+  buildPrintReport();
+  window.print();
+});
+
+const speech = 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window ? window.speechSynthesis : null;
+function currentVoice() { return speech ? pickVoice(speech.getVoices(), locale) : null; }
+function updateSpeechAvailability() {
+  const ok = Boolean(currentVoice());
+  $('speak-results').disabled = !ok;
+  $('speech-status').textContent = ok ? '' : t('noVoice');
+}
+function stopSpeaking(announce) {
+  if (speech && speech.speaking) speech.cancel();
+  $('stop-speaking').hidden = true;
+  if (announce) $('speech-status').textContent = t('speechStopped');
+}
+$('speak-results').addEventListener('click', () => {
+  const voice = currentVoice();
+  if (!lastResults || !voice) return updateSpeechAvailability();
+  speech.cancel();
+  const u = new SpeechSynthesisUtterance(speechSummary(lastResults, t));
+  u.voice = voice; u.lang = voice.lang;
+  u.onend = u.onerror = () => { $('stop-speaking').hidden = true; };
+  $('stop-speaking').hidden = false; $('speech-status').textContent = t('speaking');
+  speech.speak(u);
+});
+$('stop-speaking').addEventListener('click', () => stopSpeaking(true));
+if (speech) speech.addEventListener('voiceschanged', updateSpeechAvailability);
 
 function init() {
   translate();

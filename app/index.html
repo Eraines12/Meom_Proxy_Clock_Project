@@ -20,6 +20,8 @@
 <h2 data-t="clockTitle">Clock Test</h2>
 <p id="drawing-instructions" data-t="drawingInstructions">Draw a clock, put in all the numbers, and set the hands to 11:10.</p>
 <p id="canvas-help" data-t="canvasHelp">Use a mouse, touch, or stylus on the blank area. Keyboard: arrow keys move the pen cursor; Space starts or stops drawing. You can also draw on paper and upload a photo below. There is no timer.</p>
+<div class="practice-bar"><button type="button" class="secondary" id="practice-toggle" aria-pressed="false" data-t="practiceStart">Practice with the tools first</button>
+<p id="practice-banner" class="practice-banner" hidden data-t="practiceBanner">Practice mode: nothing here is saved or analyzed.</p></div>
 <div class="drawing-tools" role="group" aria-label="Drawing tools">
 <button type="button" id="pen" aria-pressed="true" data-t="pen">Pen</button>
 <button type="button" id="eraser" aria-pressed="false" data-t="eraser">Eraser</button>
@@ -38,22 +40,39 @@
 <section class="panel" id="analyze" hidden tabindex="-1"><div class="eyebrow" data-t="stepLabel2">STEP 03 / ANALYSIS</div><h2 data-t="uploadTitle">Upload your clock drawing</h2><p class="muted" data-t="uploadIntro">Upload a clear photo of the drawing. This preview never sends the image to a server.</p>
 <div class="demo-banner"><div><b data-t="connectionTitle">Model connection pending</b><span data-t="notConnected">AI model connection pending — no score has been generated.</span></div></div>
 <div class="dropzone" id="dropzone"><span data-t="confirmPreview">Confirm that this is the drawing you want to analyze.</span></div>
+<div class="preview-tools" id="preview-tools" role="group" aria-label="Preview controls" data-tl="previewControls">
+<button type="button" id="zoom-out" disabled data-t="zoomOut">Zoom out</button>
+<button type="button" id="zoom-in" disabled data-t="zoomIn">Zoom in</button>
+<button type="button" id="zoom-reset" disabled data-t="zoomReset">Reset zoom</button>
+<span id="zoom-level" aria-hidden="true">100%</span>
+<button type="button" id="rotate-left" disabled data-t="rotateLeft">Rotate left</button>
+<button type="button" id="rotate-right" disabled data-t="rotateRight">Rotate right</button>
+<button type="button" id="replace-image" disabled data-t="replaceImage">Replace image</button></div>
 <button type="button" class="secondary" id="remove-image" disabled data-t="removeImage">Remove image</button>
 <p id="upload-status" role="status" aria-live="polite" aria-atomic="true"></p>
 <ul class="quality-list" aria-label="Image quality status"><li><span aria-hidden="true">—</span><span data-t="qualityBlur">Sharpness — Not checked</span></li><li><span aria-hidden="true">—</span><span data-t="qualityCrop">Full clock visible — Not checked</span></li><li><span aria-hidden="true">—</span><span data-t="qualityLight">Lighting — Not checked</span></li></ul>
 <button type="button" class="primary" id="analyze-btn" disabled><span data-t="analyzeBtn">Analyze drawing</span><span aria-hidden="true">→</span></button>
+<div id="retry-box" class="retry-box" hidden><p data-t="retryHint">Your drawing and setup are kept. Retry without drawing or uploading again.</p>
+<button type="button" class="primary" id="retry-analysis" data-t="retryAnalysis">Retry analysis</button></div>
 <button type="button" class="secondary" id="back-to-handoff" data-t="backToSetup">Back</button></section>
 
 <section class="panel" id="results" hidden tabindex="-1"><div class="eyebrow" data-t="stepLabel3">STEP 04 / RESULTS</div><h2 data-t="resultsTitle">AI analysis results</h2>
 <p><span data-t="modelVersion">Model version</span>: <bdi id="model-version">—</bdi></p>
-<div class="score-summary"><div class="score-ring"><span id="final-score">—</span></div><div class="score-copy"><strong data-t="finalScore">Final score</strong> <span id="score-out-of">of 4</span><p data-t="scoreNote">This score describes four observable drawing features. It is not a diagnosis and does not indicate Alzheimer's disease, dementia, or any other medical condition.</p></div></div>
-<p data-t="thresholdNote">Thresholds are provisional research settings. Each criterion scores 1 for PASS or 0 for FAIL.</p><details><summary data-t="explain">Explain My Results</summary><p data-t="explainPending">Planned feature; not available yet.</p></details>
+<div class="score-summary"><figure class="result-figure"><img id="result-image" alt=""><figcaption data-t="resultDrawing">Drawing analyzed</figcaption></figure><div class="score-ring"><span id="final-score">—</span></div><div class="score-copy"><strong data-t="finalScore">Final score</strong> <span id="score-out-of">of 4</span><p data-t="scoreNote">This score describes four observable drawing features. It is not a diagnosis and does not indicate Alzheimer's disease, dementia, or any other medical condition.</p></div></div>
+<p data-t="thresholdNote">Thresholds are provisional research settings. Each criterion scores 1 for PASS or 0 for FAIL.</p><details open><summary data-t="explain">Explain My Results</summary><p data-t="explainIntro">Each Why? explains the result using the number the model reported for that feature.</p></details>
 <div class="criteria-list" id="criteria-list"></div>
+<div class="result-actions" role="group" aria-label="Results actions" data-tl="resultActions">
+<button type="button" class="secondary" id="print-results" data-t="printResults">Print or save results</button>
+<button type="button" class="secondary" id="speak-results" data-t="readAloud">Read results aloud</button>
+<button type="button" class="secondary" id="stop-speaking" hidden data-t="stopReading">Stop reading</button></div>
+<p id="speech-status" role="status" aria-live="polite"></p>
 <button type="button" class="primary" id="to-upload-again"><span data-t="newTest">Analyze another drawing</span></button>
 <button type="button" class="secondary" id="to-setup-again" data-t="backSetup">Back to start</button></section>
 </div></main>
+<section id="print-report" aria-hidden="true"></section>
 <footer><span>MindDial AI</span><span data-t="footer">Thoughtful design. Responsible research.</span><span data-t="phase">EDUCATIONAL PROTOTYPE · NOT A MEDICAL DIAGNOSIS</span></footer>
 <script src="analysis.js"></script>
 <script src="eligibility.js"></script>
+<script src="features.js"></script>
 <script src="script.js"></script><script src="drawing.js"></script>
 </body></html>
