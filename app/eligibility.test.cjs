@@ -39,6 +39,9 @@ test('age gate is the first required, unchecked field and uses the required mess
   assert.doesNotMatch(gate, /\bchecked\b/);
   assert.ok(html.indexOf('id="age-confirm"') < html.indexOf('id="age"'));
   assert.match(html, /I confirm that I am 18 years of age or older/);
+  const ageInput = html.match(/<input id="age"[^>]*>/)[0];
+  assert.match(ageInput, /min="18"/);
+  assert.doesNotMatch(ageInput, /\bvalue=/);
   assert.match(read('script.js'), /You must be 18 or older to use this assessment\./);
 });
 test('every locale defines the age-gate strings', () => {
