@@ -10,11 +10,25 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.concurrency import run_in_threadpool
 from starlette.datastructures import UploadFile
+from starlette.exceptions import HTTPException
+from starlette.formparsers import MultiPartException
 
+from . import gemini_grader
 from .inference import ResNet50Engine
-from .preprocessing import MAX_IMAGE_BYTES, prepare_image
+from .preprocessing import MAX_IMAGE_BYTES, prepare_image, sanitized_png
 
 MAX_REQUEST_BYTES = MAX_IMAGE_BYTES + 65536
+SCORERS = {"", "default", "gemini"}
+
+
+async def read_upload(request):
+    """Accept exactly one multipart file named image; no other fields are allowed."""
+    async with request.form(max_files=1, max_fields=0) as form:
+        parts = list(form.multi_items())
+        if len(parts) != 1 or parts[0][0] != "image" or not isinstance(parts[0][1], UploadFile):
+            raise ValueError("Expected only an image")
+        upload = parts[0][1]
+        return await upload.read(MAX_IMAGE_BYTES + 1), upload.content_type
 
 
 class BodyLimit:
@@ -46,7 +60,7 @@ class BodyLimit:
         await self.app(scope, replay, send)
 
 
-def create_app(engine_factory=ResNet50Engine):
+def create_app(engine_factory=ResNet50Engine, gemini_transport=None):
     @asynccontextmanager
     async def lifespan(app):
         try:
@@ -55,6 +69,7 @@ def create_app(engine_factory=ResNet50Engine):
             # Missing/unloadable weights must never produce a made-up score.
             app.state.engine = None
         app.state.inference_lock = asyncio.Lock()
+        app.state.gemini_lock = asyncio.Lock()
         yield
         app.state.engine = None
 
@@ -78,8 +93,38 @@ def create_app(engine_factory=ResNet50Engine):
         ready = app.state.engine is not None
         return JSONResponse({"ready": ready}, status_code=200 if ready else 503)
 
+    @app.get("/api/scorers")
+    async def scorers():
+        return {"default": app.state.engine is not None, "gemini": gemini_grader.get_config() is not None}
+
+    async def analyze_gemini(request):
+        config = gemini_grader.get_config()
+        if config is None:
+            return JSONResponse({"detail": "geminiNotConfigured"}, 503)
+        if app.state.gemini_lock.locked():
+            return JSONResponse({"detail": "Analysis busy. Try again."}, 429)
+        async with app.state.gemini_lock:
+            try:
+                data, content_type = await read_upload(request)
+                png = await run_in_threadpool(sanitized_png, data, content_type)
+            except (ValueError, MultiPartException, HTTPException):
+                return JSONResponse({"detail": "Invalid image or model output"}, 422)
+            except Exception:
+                return JSONResponse({"detail": "Analysis unavailable"}, 503)
+            try:
+                return await gemini_grader.grade_clock(
+                    png, api_key=config[0], model=config[1], transport=gemini_transport)
+            except gemini_grader.GeminiError as error:
+                status = 502 if error.code == "geminiInvalidResponse" else 503
+                return JSONResponse({"detail": error.code}, status)
+
     @app.post("/api/analyze")
     async def analyze(request: Request):
+        scorer = request.query_params.get("scorer", "")
+        if set(request.query_params) - {"scorer"} or scorer not in SCORERS:
+            return JSONResponse({"detail": "Unknown scorer"}, 422)
+        if scorer == "gemini":
+            return await analyze_gemini(request)
         engine = app.state.engine
         if engine is None:
             return JSONResponse({"detail": "notConnected"}, 503)
@@ -87,13 +132,8 @@ def create_app(engine_factory=ResNet50Engine):
             return JSONResponse({"detail": "Analysis busy. Try again."}, 429)
         async with app.state.inference_lock:
             try:
-                async with request.form(max_files=1, max_fields=0) as form:
-                    parts = list(form.multi_items())
-                    if len(parts) != 1 or parts[0][0] != "image" or not isinstance(parts[0][1], UploadFile):
-                        raise ValueError("Expected only an image")
-                    upload = parts[0][1]
-                    data = await upload.read(MAX_IMAGE_BYTES + 1)
-                    pixels = await run_in_threadpool(prepare_image, data, upload.content_type)
+                data, content_type = await read_upload(request)
+                pixels = await run_in_threadpool(prepare_image, data, content_type)
                 confidences = await run_in_threadpool(engine.predict, pixels)
                 return {"modelVersion": engine.version, "confidences": confidences}
             except ValueError:

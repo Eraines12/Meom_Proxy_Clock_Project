@@ -59,6 +59,10 @@ Object.assign(en, {
  analyzing: 'Analyzing drawing…', requestFailed: 'Analysis unavailable. Please try again. No score generated.',
  timedOut: 'Analysis timed out. Please try again. No score generated.', invalidResponse: 'The model returned incomplete results. No score generated.',
  invalidEndpoint: 'The analysis service configuration needs attention. No score generated.',
+ geminiOption: 'Experimental: score with Gemini (test only)', scorerLabel: 'Scorer', scorerGemini: 'Gemini (experimental)', scorerDefault: 'Default model',
+ geminiNeedsReview: 'Needs Review — Gemini could not judge every feature. The total is pending.', pending: 'Pending', visualReason: 'Reason',
+ geminiNotConfigured: 'Gemini is not configured on the server. No score generated.', geminiUnavailable: 'Gemini is unavailable or timed out. No score generated.',
+ geminiInvalidResponse: 'Gemini returned invalid data. No score generated.',
  modelVersion: 'Model version', reviewWarning: 'Needs Review — confidence is near the provisional threshold. The binary score is unchanged.',
  thresholdNote: 'Thresholds are provisional research settings, not validated clinical cutoffs. Each criterion scores 1 for PASS or 0 for FAIL.',
  explain: 'Explain My Results', explainPending: 'Planned feature. Personalized explanations are not available yet.'
@@ -100,7 +104,7 @@ const languages = {
 const eduValues = ['', 'none', 'primary', 'secondary', 'college-vocational', 'bachelors', 'postgraduate', 'undisclosed'];
 const langValues = ['', 'en', 'es', 'vi', 'zh', 'ar', 'fr', 'other', 'undisclosed'];
 
-let locale = 'en', setup = null, lastResults = null, modelReady = false;
+let locale = 'en', setup = null, lastResults = null, modelReady = false, geminiAvailable = false;
 
 function options(id, labels, values) {
   const current = $(id).value;
@@ -152,6 +156,13 @@ async function refreshModelConnection() {
     modelReady = response.ok && (await response.json()).ready === true;
   } catch { modelReady = false; }
   document.querySelector('.demo-banner').hidden = modelReady;
+  try {
+    const response = await fetch('/api/scorers', { cache: 'no-store', credentials: 'omit',
+      redirect: 'error', signal: AbortSignal.timeout(5000) });
+    geminiAvailable = response.ok && (await response.json()).gemini === true;
+  } catch { geminiAvailable = false; }
+  $('scorer-choice').hidden = !geminiAvailable;
+  if (!geminiAvailable) $('use-gemini').checked = false;
 }
 
 function t(key) { return (translations[locale] || en)[key] || en[key] || key; }
@@ -235,6 +246,8 @@ function clearDrawing() {
   $('criteria-list').replaceChildren();
   $('final-score').textContent = '—';
   $('model-version').textContent = '—';
+  $('scorer-name').textContent = '—';
+  $('use-gemini').checked = false;
   $('analyze-btn').disabled = true;
   $('remove-image').disabled = true;
   status('');
@@ -275,14 +288,44 @@ $('analyze-btn').addEventListener('click', async () => {
   if (!selectedFile || busy || !setup) return;
   setBusy(true); status('analyzing');
   try {
-    const result = await analyzeClockDrawing(selectedFile);
-    modelReady = true; document.querySelector('.demo-banner').hidden = true;
+    const useGemini = geminiAvailable && $('use-gemini').checked;
+    const result = await analyzeClockDrawing(selectedFile, { scorer: useGemini ? 'gemini' : 'default' });
+    if (!useGemini) { modelReady = true; document.querySelector('.demo-banner').hidden = true; }
     lastResults = result; renderResults(result); status(''); showStep('results');
   } catch (error) { if (error.message === 'notConnected') { modelReady = false; document.querySelector('.demo-banner').hidden = false; } status(en[error.message] ? error.message : 'requestFailed'); }
   finally { setBusy(false); }
 });
 
+function renderGeminiResults(result) {
+  const results = result.criteria.map(r => ({ ...project.criteria.find(c => c.key === r.key), ...r }));
+  $('model-version').textContent = result.modelVersion;
+  $('scorer-name').textContent = t('scorerGemini');
+  $('threshold-note').hidden = true;
+  $('criteria-list').replaceChildren(...results.map(r => {
+    const card = document.createElement('div'); card.className = 'criterion-card';
+    const header = document.createElement('header'), title = document.createElement('h3'), badge = document.createElement('span');
+    title.textContent = t(r.labelKey);
+    badge.className = 'badge ' + (r.decision === 'Pass' ? 'pass' : r.decision === 'Fail' ? 'fail' : 'review');
+    badge.textContent = r.decision === 'Pass' ? t('pass') + ' \u2713' : r.decision === 'Fail' ? t('fail') + ' \u2715' : t('review');
+    header.append(title, badge);
+    const reason = document.createElement('p'); reason.className = 'visual-reason';
+    reason.textContent = t('visualReason') + ': ' + r.visualReason;
+    card.append(header, reason);
+    return card;
+  }));
+  $('final-score').textContent = result.needsReview ? '—' : result.totalScore;
+  $('score-out-of').textContent = result.needsReview ? t('pending') : t('outOf4');
+  if (result.needsReview) {
+    const warning = document.createElement('p'); warning.className = 'review-warning';
+    warning.textContent = '⚠ ' + t('geminiNeedsReview');
+    $('criteria-list').prepend(warning);
+  }
+}
+
 function renderResults(result) {
+  if (result.scorer === 'gemini') return renderGeminiResults(result);
+  $('threshold-note').hidden = false;
+  $('scorer-name').textContent = t('scorerDefault');
   const results = result.criteria.map(r => ({ ...project.criteria.find(c => c.key === r.key), ...r }));
   $('model-version').textContent = result.modelVersion;
   const list = $('criteria-list');

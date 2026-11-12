@@ -60,3 +60,4 @@ __pycache__/
 
 # Interrupted private model downloads
 *.keras.part
+backend/test_data/live_results.json

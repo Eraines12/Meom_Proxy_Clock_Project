@@ -1,0 +1,5 @@
+{
+  "clock-06": {"closedCircle": "Pass", "all12Numbers": "Pass", "numberPosition": "Pass", "correctHands": "Fail", "total": 3},
+  "clock-07": {"closedCircle": "Fail", "all12Numbers": "Fail", "numberPosition": "Fail", "correctHands": "Pass", "total": 1},
+  "clock-08": {"closedCircle": "Pass", "all12Numbers": "Pass", "numberPosition": "Fail", "correctHands": "Fail", "total": 2}
+}

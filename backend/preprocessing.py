@@ -38,3 +38,30 @@ def prepare_image(data: bytes, content_type: str) -> np.ndarray:
     except (UnidentifiedImageError, OSError, Image.DecompressionBombError,
             Image.DecompressionBombWarning) as error:
         raise ValueError("Image could not be decoded") from error
+
+
+def sanitized_png(data: bytes, content_type: str, max_side: int = 1568) -> bytes:
+    """Validate, then re-encode as a fresh PNG so no EXIF/GPS/text metadata survives."""
+    if content_type not in FORMATS or not 0 < len(data) <= MAX_IMAGE_BYTES:
+        raise ValueError("Invalid image type or size")
+    try:
+        with warnings.catch_warnings():
+            warnings.simplefilter("error", Image.DecompressionBombWarning)
+            with Image.open(BytesIO(data)) as source:
+                if (source.format != FORMATS[content_type] or
+                        getattr(source, "n_frames", 1) != 1 or
+                        source.width * source.height > MAX_PIXELS):
+                    raise ValueError("Invalid image format or dimensions")
+                source.load()
+                rgba = ImageOps.exif_transpose(source).convert("RGBA")
+                white = Image.new("RGBA", rgba.size, (255, 255, 255, 255))
+                rgb = Image.alpha_composite(white, rgba).convert("RGB")
+                rgb.thumbnail((max_side, max_side), Image.Resampling.LANCZOS)
+                clean = Image.new("RGB", rgb.size)
+                clean.putdata(list(rgb.getdata()))
+                out = BytesIO()
+                clean.save(out, format="PNG")
+                return out.getvalue()
+    except (UnidentifiedImageError, OSError, Image.DecompressionBombError,
+            Image.DecompressionBombWarning) as error:
+        raise ValueError("Image could not be decoded") from error

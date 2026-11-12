@@ -27,10 +27,29 @@ function validateAnalysis(data) {
     ...decide(data.confidences[key], thresholds[key]) })) };
 }
 
-async function analyzeClockDrawing(file) {
+const geminiDecisions = Object.freeze(['Pass', 'Fail', 'Unsure']);
+
+function validateGeminiAnalysis(data) {
+  const list = data && Array.isArray(data.criteria) ? data.criteria : null;
+  if (!list || data.scorer !== 'gemini' || typeof data.modelVersion !== 'string' || !data.modelVersion.trim() ||
+      data.modelVersion.length > 120 || list.length !== criterionKeys.length ||
+      !criterionKeys.every((key, i) => list[i] && list[i].key === key && geminiDecisions.includes(list[i].decision) &&
+        typeof list[i].visualReason === 'string' && list[i].visualReason.trim())) {
+    throw new Error('invalidResponse');
+  }
+  const needsReview = list.some(c => c.decision === 'Unsure');
+  const total = list.filter(c => c.decision === 'Pass').length;
+  if (data.needsReview !== needsReview || data.totalScore !== (needsReview ? null : total)) throw new Error('invalidResponse');
+  return { scorer: 'gemini', modelVersion: data.modelVersion, needsReview, totalScore: data.totalScore,
+    criteria: list.map(c => ({ key: c.key, decision: c.decision, visualReason: c.visualReason.trim() })) };
+}
+
+async function analyzeClockDrawing(file, options = {}) {
   validateFile(file);
   if (!analysisConfig.endpoint) throw new Error('notConnected');
+  const gemini = options.scorer === 'gemini';
   const endpoint = new URL(analysisConfig.endpoint, location.href);
+  if (gemini) endpoint.searchParams.set('scorer', 'gemini');
   if (endpoint.origin !== location.origin) throw new Error('invalidEndpoint');
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), analysisConfig.timeoutMs);
@@ -45,12 +64,14 @@ async function analyzeClockDrawing(file) {
       if (response.status === 413) throw new Error('uploadTooLarge');
       let detail;
       try { detail = (await response.json()).detail; } catch { /* non-JSON failure */ }
-      throw new Error(detail === 'notConnected' ? 'notConnected' : 'requestFailed');
+      const known = ['notConnected', 'geminiNotConfigured', 'geminiUnavailable', 'geminiInvalidResponse'];
+      throw new Error(known.includes(detail) ? detail : 'requestFailed');
     }
-    return validateAnalysis(await response.json());
+    const data = await response.json();
+    return gemini ? validateGeminiAnalysis(data) : validateAnalysis(data);
   } catch (error) {
     if (error.name === 'AbortError') throw new Error('timedOut');
-    if (['invalidResponse', 'notConnected', 'uploadTooLarge'].includes(error.message)) throw error;
+    if (['invalidResponse', 'notConnected', 'uploadTooLarge', 'geminiNotConfigured', 'geminiUnavailable', 'geminiInvalidResponse'].includes(error.message)) throw error;
     throw new Error('requestFailed');
   } finally { clearTimeout(timer); }
 }

@@ -7,7 +7,7 @@ function adapter(fetch, configured = false) {
   const context = vm.createContext({ fetch, URL, FormData, AbortController, setTimeout, clearTimeout,
     location: { href: 'https://minddial.test/', origin: 'https://minddial.test' } });
   vm.runInContext(configured ? source : source.replace("endpoint: '/api/analyze'", "endpoint: ''"), context);
-  return vm.runInContext('({ analyzeClockDrawing, validateAnalysis, decide, validateFile })', context);
+  return vm.runInContext('({ analyzeClockDrawing, validateAnalysis, validateGeminiAnalysis, decide, validateFile })', context);
 }
 const file = new Blob(['image'], { type: 'image/png' });
 const response = { modelVersion: 'resnet50-test', confidences: {
@@ -58,5 +58,37 @@ test('configured but unavailable route remains pending without a score', async (
   for (const response of [{ ok: false, status: 404 },
     { ok: false, status: 503, json: async () => ({ detail: 'notConnected' }) }]) {
     await assert.rejects(adapter(async () => response, true).analyzeClockDrawing(file), /notConnected/);
+  }
+});
+
+const geminiBody = (decisions, extra = {}) => ({ scorer: 'gemini', modelVersion: 'gemini-test',
+  needsReview: decisions.includes('Unsure'),
+  totalScore: decisions.includes('Unsure') ? null : decisions.filter(d => d === 'Pass').length,
+  criteria: ['closedCircle', 'all12Numbers', 'numberPosition', 'correctHands'].map((key, i) =>
+    ({ key, decision: decisions[i], visualReason: 'Visible detail ' + key })), ...extra });
+test('Gemini scorer is opt-in, sends only the image, and validates results', async () => {
+  const calls = [];
+  const api = adapter(async (url, options) => { calls.push({ url: String(url), body: options.body });
+    return Response.json(String(url).includes('scorer=gemini') ? geminiBody(['Pass', 'Pass', 'Pass', 'Fail']) : response); }, true);
+  await api.analyzeClockDrawing(file);
+  assert.equal(calls[0].url, 'https://minddial.test/api/analyze');
+  const result = await api.analyzeClockDrawing(file, { scorer: 'gemini' });
+  assert.equal(calls[1].url, 'https://minddial.test/api/analyze?scorer=gemini');
+  assert.deepEqual([...calls[1].body.keys()], ['image']);
+  assert.equal(result.scorer, 'gemini'); assert.equal(result.totalScore, 3);
+});
+test('Gemini Unsure leaves the total pending and inconsistent data is rejected', () => {
+  const api = adapter();
+  const review = api.validateGeminiAnalysis(geminiBody(['Pass', 'Unsure', 'Pass', 'Pass']));
+  assert.equal(review.needsReview, true); assert.equal(review.totalScore, null);
+  const bad = [geminiBody(['Pass', 'Pass', 'Pass', 'Pass'], { totalScore: 3 }),
+    geminiBody(['Pass', 'Maybe', 'Pass', 'Pass']), geminiBody(['Pass', 'Pass', 'Pass', 'Pass'], { criteria: [] }),
+    geminiBody(['Pass', 'Unsure', 'Pass', 'Pass'], { totalScore: 3 }), { scorer: 'other' }];
+  for (const data of bad) assert.throws(() => api.validateGeminiAnalysis(data), /invalidResponse/);
+});
+test('Gemini error codes surface as clear errors', async () => {
+  for (const detail of ['geminiNotConfigured', 'geminiUnavailable', 'geminiInvalidResponse']) {
+    const api = adapter(async () => Response.json({ detail }, { status: 503 }), true);
+    await assert.rejects(api.analyzeClockDrawing(file, { scorer: 'gemini' }), new RegExp(detail));
   }
 });
