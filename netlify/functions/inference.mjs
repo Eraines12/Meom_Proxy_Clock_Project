@@ -5,8 +5,10 @@ const json = (body, status = 200) => Response.json(body, { status,
 
 export default async function handler(request) {
   const path = new URL(request.url).pathname;
-  if (!['/api/analyze', '/api/health'].includes(path)) return json({ detail: 'Not found' }, 404);
-  const method = path === '/api/health' ? 'GET' : 'POST';
+  if (!['/api/analyze', '/api/health', '/api/scorers'].includes(path)) return json({ detail: 'Not found' }, 404);
+  const method = path === '/api/analyze' ? 'POST' : 'GET';
+  const scorer = new URL(request.url).searchParams.get('scorer') || '';
+  if (path !== '/api/analyze' ? false : !['', 'default', 'gemini'].includes(scorer)) return json({ detail: 'Unknown scorer' }, 422);
   if (request.method !== method) return json({ detail: 'Method not allowed' }, 405);
   const origin = process.env.MINDDIAL_BACKEND_ORIGIN;
   const token = process.env.MINDDIAL_API_TOKEN;
@@ -33,15 +35,25 @@ export default async function handler(request) {
       body = Buffer.concat(parts);
       headers['Content-Type'] = request.headers.get('content-type') || '';
     }
-    const result = await fetch(new URL(path, url), { method, headers, body,
+    const target = new URL(path, url);
+    if (scorer === 'gemini') target.searchParams.set('scorer', 'gemini');
+    const result = await fetch(target, { method, headers, body,
       redirect: 'error', signal: AbortSignal.timeout(25000), cache: 'no-store' });
     const data = await result.json();
     // Never forward server diagnostics, arbitrary headers, or cookies to the browser.
-    if (!result.ok) return json({ detail: data.detail === 'notConnected' ? 'notConnected' : 'requestFailed', ready: false }, result.status);
-    return json(path === '/api/health' ? { ready: data.ready === true } : {
-      modelVersion: data.modelVersion, confidences: data.confidences
-    });
+    if (!result.ok) {
+      const known = ['notConnected', 'geminiNotConfigured', 'geminiUnavailable', 'geminiInvalidResponse'];
+      return json({ detail: known.includes(data.detail) ? data.detail : 'requestFailed', ready: false }, result.status);
+    }
+    if (path === '/api/health') return json({ ready: data.ready === true });
+    if (path === '/api/scorers') return json({ default: data.default === true, gemini: data.gemini === true });
+    if (scorer === 'gemini') {
+      return json({ scorer: 'gemini', modelVersion: data.modelVersion, needsReview: data.needsReview,
+        totalScore: data.totalScore,
+        criteria: Array.isArray(data.criteria) ? data.criteria.map(c => ({ key: c.key, decision: c.decision, visualReason: c.visualReason })) : [] });
+    }
+    return json({ modelVersion: data.modelVersion, confidences: data.confidences });
   } catch { return json({ detail: 'requestFailed', ready: false }, 503); }
 }
 
-export const config = { path: ['/api/analyze', '/api/health'] };
+export const config = { path: ['/api/analyze', '/api/health', '/api/scorers'] };

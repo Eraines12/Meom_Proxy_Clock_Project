@@ -41,13 +41,14 @@
 <button type="button" class="secondary" id="remove-image" disabled data-t="removeImage">Remove image</button>
 <p id="upload-status" role="status" aria-live="polite" aria-atomic="true"></p>
 <ul class="quality-list" aria-label="Image quality status"><li><span aria-hidden="true">—</span><span data-t="qualityBlur">Sharpness — Not checked</span></li><li><span aria-hidden="true">—</span><span data-t="qualityCrop">Full clock visible — Not checked</span></li><li><span aria-hidden="true">—</span><span data-t="qualityLight">Lighting — Not checked</span></li></ul>
+<p class="scorer-choice" id="scorer-choice" hidden><label><input type="checkbox" id="use-gemini"> <span data-t="geminiOption">Experimental: score with Gemini (test only)</span></label></p>
 <button type="button" class="primary" id="analyze-btn" disabled><span data-t="analyzeBtn">Analyze drawing</span><span aria-hidden="true">→</span></button>
 <button type="button" class="secondary" id="back-to-handoff" data-t="backToSetup">Back</button></section>
 
 <section class="panel" id="results" hidden tabindex="-1"><div class="eyebrow" data-t="stepLabel3">STEP 04 / RESULTS</div><h2 data-t="resultsTitle">AI analysis results</h2>
 <p><span data-t="modelVersion">Model version</span>: <bdi id="model-version">—</bdi></p>
 <div class="score-summary"><div class="score-ring"><span id="final-score">—</span></div><div class="score-copy"><strong data-t="finalScore">Final score</strong> <span id="score-out-of">of 4</span><p data-t="scoreNote">This score describes four observable drawing features. It is not a diagnosis and does not indicate Alzheimer's disease, dementia, or any other medical condition.</p></div></div>
-<p data-t="thresholdNote">Thresholds are provisional research settings. Each criterion scores 1 for PASS or 0 for FAIL.</p><details><summary data-t="explain">Explain My Results</summary><p data-t="explainPending">Planned feature; not available yet.</p></details>
+<p id="threshold-note" data-t="thresholdNote">Thresholds are provisional research settings. Each criterion scores 1 for PASS or 0 for FAIL.</p><details><summary data-t="explain">Explain My Results</summary><p data-t="explainPending">Planned feature; not available yet.</p></details>
 <div class="criteria-list" id="criteria-list"></div>
 <button type="button" class="primary" id="to-upload-again"><span data-t="newTest">Analyze another drawing</span></button>
 <button type="button" class="secondary" id="to-setup-again" data-t="backSetup">Back to start</button></section>

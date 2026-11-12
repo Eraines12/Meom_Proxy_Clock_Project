@@ -57,3 +57,4 @@ button:disabled{cursor:not-allowed;opacity:.5}.canvas-wrap{position:relative;wid
 #canvas-help,#drawing-status{line-height:1.7}.paper-options:focus-within{outline:3px solid var(--accent);outline-offset:4px}
 .steps{gap:20px}.steps li{min-width:120px}#clock-test p{overflow-wrap:anywhere}
 @media(max-width:500px){#clock-test{padding:24px 18px}.drawing-tools button{flex:1}.steps{display:grid;grid-template-columns:1fr 1fr}.steps li{min-width:0}.paper-options .file-btn{width:100%;justify-content:center}}
+.scorer-choice{margin:12px 0}.scorer-choice label{display:flex;gap:10px;align-items:center}.visual-reason{overflow-wrap:anywhere}

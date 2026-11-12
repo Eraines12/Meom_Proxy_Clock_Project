@@ -41,3 +41,39 @@ test('proxy bounds uploaded bytes and rejects invalid configuration', async () =
   delete process.env.MINDDIAL_BACKEND_ORIGIN;
   delete process.env.MINDDIAL_API_TOKEN;
 });
+
+test('proxy forwards only the gemini scorer choice and whitelists its fields', async () => {
+  process.env.MINDDIAL_BACKEND_ORIGIN = 'https://model.test';
+  process.env.MINDDIAL_API_TOKEN = 'test-only';
+  const original = globalThis.fetch;
+  let seen;
+  globalThis.fetch = async (url) => {
+    seen = url.href;
+    return Response.json({ scorer: 'gemini', modelVersion: 'm', needsReview: false, totalScore: 3, secret: 'omit',
+      criteria: [{ key: 'closedCircle', decision: 'Pass', visualReason: 'ok', extra: 'omit' }] });
+  };
+  try {
+    const request = (q) => new Request('https://app.test/api/analyze' + q, { method: 'POST', body: 'x' });
+    const body = await (await handler(request('?scorer=gemini'))).json();
+    assert.equal(seen, 'https://model.test/api/analyze?scorer=gemini');
+    assert.deepEqual(Object.keys(body), ['scorer', 'modelVersion', 'needsReview', 'totalScore', 'criteria']);
+    assert.deepEqual(Object.keys(body.criteria[0]), ['key', 'decision', 'visualReason']);
+    assert.equal((await handler(request('?scorer=other'))).status, 422);
+    await handler(request('?scorer=default'));
+    assert.equal(seen, 'https://model.test/api/analyze');
+  } finally { globalThis.fetch = original; }
+});
+
+test('proxy exposes scorer availability and passes Gemini error codes', async () => {
+  process.env.MINDDIAL_BACKEND_ORIGIN = 'https://model.test';
+  process.env.MINDDIAL_API_TOKEN = 'test-only';
+  const original = globalThis.fetch;
+  try {
+    globalThis.fetch = async () => Response.json({ default: true, gemini: true, key: 'omit' });
+    assert.deepEqual(await (await handler(new Request('https://app.test/api/scorers'))).json(), { default: true, gemini: true });
+    globalThis.fetch = async () => Response.json({ detail: 'geminiInvalidResponse', raw: 'omit' }, { status: 502 });
+    const response = await handler(new Request('https://app.test/api/analyze?scorer=gemini', { method: 'POST', body: 'x' }));
+    assert.equal(response.status, 502);
+    assert.equal((await response.json()).detail, 'geminiInvalidResponse');
+  } finally { globalThis.fetch = original; }
+});
