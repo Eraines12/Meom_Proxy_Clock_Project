@@ -34,9 +34,7 @@ def model_payload(decisions, reason="Visible detail."):
 
 
 def envelope(text):
-    return {"id": "x", "status": "completed", "steps": [
-        {"type": "thought", "signature": "s"},
-        {"type": "model_output", "content": [{"type": "text", "text": text}]}]}
+    return {"candidates": [{"content": {"parts": [{"text": text}]}}]}
 
 
 def transport_returning(body, status=200, seen=None):
@@ -79,15 +77,18 @@ def test_request_is_one_clean_image_without_fixture_answers_or_demographics():
         envelope(json.dumps(model_payload(EXPECTED["clock-06"]))), seen=seen))
     request = seen[0]
     body = json.loads(request.content)
-    assert request.headers["x-goog-api-key"] == "test-key" and body["store"] is False
-    images = [p for p in body["input"] if p["type"] == "image"]
-    assert len(images) == 1 and body["model"] == MODEL
-    Image.open(BytesIO(base64.b64decode(images[0]["data"]))).verify()
-    text = request.content.decode().lower()
-    for word in ("age", "education", "demograph", "expected", "clock-06", "3/4"):
-        assert word not in json.dumps({k: v for k, v in body.items() if k != "input"}).lower() or word == "age"
+    assert request.headers["x-goog-api-key"] == "test-key"
+    assert request.url.path.endswith(f"/models/{MODEL}:generateContent")
+    assert set(body) == {"systemInstruction", "contents", "generationConfig"}
+    parts = body["contents"][0]["parts"]
+    images = [p["inlineData"] for p in parts if "inlineData" in p]
+    assert len(images) == 1 and images[0]["mimeType"] == "image/png"
+    Image.open(BytesIO(base64.b64decode(images[0]["data"], validate=True))).verify()
+    text = json.dumps({**body, "contents": [{"parts": [x for x in body["contents"][0]["parts"] if "text" in x]}]}).lower()
+    for word in ("education", "demograph", "expected", "3/4", "age:"):
+        assert word not in text
     assert "clock-06" not in text and "expected" not in text
-    assert body["response_format"]["schema"]["required"] == list(gg.CRITERIA)
+    assert body["generationConfig"]["responseJsonSchema"]["required"] == list(gg.CRITERIA)
 
 
 def test_sanitized_png_strips_metadata():
@@ -113,7 +114,7 @@ def test_malformed_model_output_is_rejected(text):
     assert error.value.code == "geminiInvalidResponse"
 
 
-@pytest.mark.parametrize("body", [{}, {"steps": "x"}, {"steps": [{"type": "thought"}]}, ["not", "an", "object"]])
+@pytest.mark.parametrize("body", [{}, {"candidates": "x"}, {"candidates": [{"content": {"parts": [{"inlineData": {}}]}}]}, {"candidates": []}, ["not", "an", "object"]])
 def test_malformed_envelope_is_rejected(body):
     with pytest.raises(gg.GeminiError) as error:
         grade(fixture_png("clock-06"), transport_returning(body))
@@ -205,15 +206,27 @@ def test_endpoint_gemini_unsure_leaves_total_pending(monkeypatch):
     assert body["needsReview"] is True and body["totalScore"] is None
 
 
+def test_model_access_check_uses_models_api():
+    def handler(request):
+        assert request.method == "GET" and request.url.path.endswith(f"/models/{MODEL}")
+        return httpx.Response(200, json={"name": f"models/{MODEL}", "supportedGenerationMethods": ["generateContent"]})
+    assert asyncio.run(gg.check_model_access(api_key="k", model=MODEL, transport=httpx.MockTransport(handler))) is True
+    no_method = transport_returning({"supportedGenerationMethods": ["embedContent"]})
+    assert asyncio.run(gg.check_model_access(api_key="k", model=MODEL, transport=no_method)) is False
+    with pytest.raises(gg.GeminiError):
+        asyncio.run(gg.check_model_access(api_key="k", model=MODEL, transport=transport_returning({}, status=404)))
+
+
 LIVE = os.environ.get("MINDDIAL_LIVE_GEMINI") == "1" and gg.get_config() is not None
 
 
 @pytest.mark.skipif(not LIVE, reason="opt-in: set MINDDIAL_LIVE_GEMINI=1, GEMINI_API_KEY, MINDDIAL_GEMINI_MODEL")
 def test_live_gemini_on_synthetic_fixtures():
-    """Reports observed results; only an unreachable or structurally invalid response fails."""
+    """Verify model access, send one clock first, then the rest. Reports results; disagreement is not a failure."""
     key, model = gg.get_config()
+    assert asyncio.run(gg.check_model_access(api_key=key, model=model)), "model not available for generateContent"
     rows = []
-    for clock, expected in EXPECTED.items():
+    for clock, expected in EXPECTED.items():  # first request is the gate; any error stops the batch
         result = asyncio.run(gg.grade_clock(fixture_png(clock), api_key=key, model=model))
         observed = {c["key"]: c["decision"] for c in result["criteria"]}
         rows.append({"clock": clock, "model": model, "expected_total": expected["total"],

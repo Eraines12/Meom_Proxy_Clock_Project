@@ -13,8 +13,7 @@ import re
 
 import httpx
 
-API_URL = "https://generativelanguage.googleapis.com/v1beta/interactions"
-API_REVISION = "2026-05-20"
+API_BASE = "https://generativelanguage.googleapis.com/v1beta"
 TIMEOUT_SECONDS = 20.0
 MAX_REASON_CHARS = 400
 MODEL_ID = re.compile(r"^[a-z0-9][a-z0-9.\-]{0,63}$")
@@ -109,40 +108,52 @@ def validate_response(payload, model):
             "totalScore": total, "criteria": criteria}
 
 
-def _output_text(interaction):
-    steps = interaction.get("steps") if isinstance(interaction, dict) else None
-    if not isinstance(steps, list):
+def _output_text(data):
+    candidates = data.get("candidates") if isinstance(data, dict) else None
+    if not isinstance(candidates, list) or not candidates or not isinstance(candidates[0], dict):
         raise GeminiError("geminiInvalidResponse")
-    parts = [c.get("text") for s in steps if isinstance(s, dict) and s.get("type") == "model_output"
-             for c in (s.get("content") or []) if isinstance(c, dict) and c.get("type") == "text"]
-    if not parts or not all(isinstance(p, str) for p in parts):
+    parts = (candidates[0].get("content") or {}).get("parts")
+    texts = [p.get("text") for p in parts if isinstance(p, dict) and "text" in p] if isinstance(parts, list) else []
+    if not texts or not all(isinstance(x, str) for x in texts):
         raise GeminiError("geminiInvalidResponse")
-    return "".join(parts)
+    return "".join(texts)
 
 
-async def grade_clock(png_bytes, *, api_key, model, transport=None, timeout=TIMEOUT_SECONDS):
-    """Send exactly one sanitized PNG; return the validated result or raise GeminiError."""
-    body = {
-        "model": model,
-        "store": False,
-        "system_instruction": SYSTEM_INSTRUCTION,
-        "input": [
-            {"type": "text", "text": USER_PROMPT},
-            {"type": "image", "data": base64.b64encode(png_bytes).decode("ascii"), "mime_type": "image/png"},
-        ],
-        "response_format": {"type": "text", "mime_type": "application/json", "schema": RESPONSE_SCHEMA},
-    }
-    headers = {"x-goog-api-key": api_key, "Api-Revision": API_REVISION}
+async def check_model_access(*, api_key, model, transport=None, timeout=TIMEOUT_SECONDS):
+    """Models API lookup; True only if the model exists and supports generateContent."""
     try:
         async with httpx.AsyncClient(transport=transport, timeout=timeout) as client:
-            response = await client.post(API_URL, json=body, headers=headers)
+            response = await client.get(f"{API_BASE}/models/{model}", headers={"x-goog-api-key": api_key})
     except httpx.HTTPError:
         raise GeminiError("geminiUnavailable") from None
     if response.status_code != 200:
         raise GeminiError("geminiUnavailable")
     try:
-        text = _output_text(response.json())
-        payload = json.loads(text)
+        return "generateContent" in (response.json().get("supportedGenerationMethods") or [])
+    except (ValueError, AttributeError):
+        raise GeminiError("geminiInvalidResponse") from None
+
+
+async def grade_clock(png_bytes, *, api_key, model, transport=None, timeout=TIMEOUT_SECONDS):
+    """Send exactly one sanitized PNG; return the validated result or raise GeminiError."""
+    body = {
+        "systemInstruction": {"parts": [{"text": SYSTEM_INSTRUCTION}]},
+        "contents": [{"role": "user", "parts": [
+            {"text": USER_PROMPT},
+            {"inlineData": {"mimeType": "image/png", "data": base64.b64encode(png_bytes).decode("ascii")}},
+        ]}],
+        "generationConfig": {"responseMimeType": "application/json", "responseJsonSchema": RESPONSE_SCHEMA},
+    }
+    try:
+        async with httpx.AsyncClient(transport=transport, timeout=timeout) as client:
+            response = await client.post(f"{API_BASE}/models/{model}:generateContent", json=body,
+                                         headers={"x-goog-api-key": api_key})
+    except httpx.HTTPError:
+        raise GeminiError("geminiUnavailable") from None
+    if response.status_code != 200:
+        raise GeminiError("geminiUnavailable")
+    try:
+        payload = json.loads(_output_text(response.json()))
     except (ValueError, TypeError):
         raise GeminiError("geminiInvalidResponse") from None
     return validate_response(payload, model)

@@ -120,12 +120,12 @@ Railway service variables (the Python backend):
 | Variable | Value |
 | --- | --- |
 | `GEMINI_API_KEY` | A Google AI Studio API key. Secret; set only on Railway. |
-| `MINDDIAL_GEMINI_MODEL` | A model ID from Google's current docs, e.g. `gemini-3.8-flash`. |
+| `MINDDIAL_GEMINI_MODEL` | Configurable model ID; test candidate `gemini-3.8-flash`. Confirm it with the Models API (below). |
 
 Netlify needs no new variables; `MINDDIAL_BACKEND_ORIGIN` and `MINDDIAL_API_TOKEN` are reused.
 Unset either Railway variable to disable Gemini.
 
-Each request sends one metadata-stripped PNG and a fixed rubric; no age, education or other
+Calls use `models/{model}:generateContent` with top-level `systemInstruction`, `contents` (text + `inlineData` raw base64 with `mimeType`) and `generationConfig` (JSON schema). Each request sends one metadata-stripped PNG and a fixed rubric; no age, education or other
 demographics. Gemini returns Pass / Fail / Unsure plus a `visual_reason` for `closedCircle`,
 `all12Numbers`, `numberPosition` and `correctHands`. The server validates it and computes the
 total (Pass = 1, Fail = 0). Any Unsure gives Needs Review with the total left pending.
@@ -139,7 +139,7 @@ Tests use synthetic drawings in `backend/test_data/` (regenerate with
 python -m pytest backend -q                       # mocked tests
 # opt-in live test against the real Gemini API (PowerShell shown):
 $env:MINDDIAL_LIVE_GEMINI="1"; $env:GEMINI_API_KEY="..."; $env:MINDDIAL_GEMINI_MODEL="gemini-3.8-flash"
-python -m pytest backend/test_gemini_grader.py -k live -s
+python -m pytest backend/test_gemini_grader.py -k live -s   # checks GET /v1beta/models/{model} first, then clock-06 before 07 and 08
 ```
 
 The live test prints observed results and writes `backend/test_data/live_results.json`
