@@ -48,6 +48,8 @@ This is the detailed technical README for the `app/` folder — the static HTML/
 
 Three steps are shown in the UI: **Your setup → Upload drawing → AI results.** The age/education/consent form never changes the AI score — it is kept for optional, separate research context (see [Privacy Behavior](#privacy-behavior)).
 
+**18+ only.** Setup begins with a required, unchecked "I confirm that I am 18 years of age or older" checkbox, and entered ages below 18 are rejected ("You must be 18 or older to use this assessment."). Drawing, uploading, and analyzing are blocked until setup passes. Age and the confirmation are never included in the model request (rules in `eligibility.js`, tests in `eligibility.test.cjs`).
+
 ## Four Scoring Criteria
 
 Defined in `app/script.js` (`project.criteria`) and documented in the [main README](../README.md#four-scoring-criteria):

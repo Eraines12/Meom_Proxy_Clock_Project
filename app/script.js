@@ -82,6 +82,12 @@ Object.assign(zh, {"clockTitle":"画钟测试","testStep":"画钟测试","contin
 Object.assign(ar, {"clockTitle":"اختبار رسم الساعة","testStep":"اختبار الساعة","continue":"المتابعة إلى اختبار الساعة","drawingInstructions":"ارسم ساعة، واكتب جميع الأرقام، واضبط العقارب على 11:10.","pen":"قلم","eraser":"ممحاة","undo":"تراجع","clearCanvas":"مسح / إعادة الرسم","submitDrawing":"إرسال الرسمة","takePhoto":"التقاط صورة"});
 Object.assign(fr, {"clockTitle":"Test de l’horloge","testStep":"Test de l’horloge","continue":"Continuer vers le test de l’horloge","drawingInstructions":"Dessinez une horloge, inscrivez tous les chiffres et placez les aiguilles à 11 h 10.","pen":"Stylo","eraser":"Gomme","undo":"Annuler","clearCanvas":"Effacer / Recommencer","submitDrawing":"Envoyer le dessin","takePhoto":"Prendre une photo"});
 const translations = { en, es, vi, zh, ar, fr };
+Object.assign(en, { ageGateTitle: 'Age requirement', ageConfirm: 'I confirm that I am 18 years of age or older', ageGateHelp: 'This assessment is only for adults aged 18 or older. You must confirm this before you can draw, upload, or analyze a clock.', ageHelp: 'Enter a whole number from 18 to 120.', ageUnder18: 'You must be 18 or older to use this assessment.', ageConfirmRequired: 'Confirm that you are 18 or older to continue.', ageInvalid: 'Please enter a whole-number age from 18 to 120.' });
+Object.assign(es, { ageGateTitle: 'Requisito de edad', ageConfirm: 'Confirmo que tengo 18 años o más', ageGateHelp: 'Esta evaluación es solo para adultos de 18 años o más. Debes confirmarlo antes de dibujar, subir o analizar un reloj.', ageHelp: 'Introduce un número entero entre 18 y 120.', ageUnder18: 'Debes tener 18 años o más para usar esta evaluación.', ageConfirmRequired: 'Confirma que tienes 18 años o más para continuar.', ageInvalid: 'Introduce una edad válida entre 18 y 120.' });
+Object.assign(vi, { ageGateTitle: 'Yêu cầu về độ tuổi', ageConfirm: 'Tôi xác nhận rằng tôi từ 18 tuổi trở lên', ageGateHelp: 'Bài đánh giá này chỉ dành cho người từ 18 tuổi trở lên. Bạn phải xác nhận trước khi vẽ, tải lên hoặc phân tích đồng hồ.', ageHelp: 'Nhập một số nguyên từ 18 đến 120.', ageUnder18: 'Bạn phải từ 18 tuổi trở lên để sử dụng bài đánh giá này.', ageConfirmRequired: 'Hãy xác nhận bạn từ 18 tuổi trở lên để tiếp tục.', ageInvalid: 'Vui lòng nhập tuổi là số nguyên từ 18 đến 120.' });
+Object.assign(zh, { ageGateTitle: '年龄要求', ageConfirm: '我确认我已年满 18 岁', ageGateHelp: '本评估仅限 18 岁及以上的成年人使用。在绘制、上传或分析钟表之前，您必须先确认。', ageHelp: '请输入 18 至 120 之间的整数。', ageUnder18: '您必须年满 18 岁才能使用本评估。', ageConfirmRequired: '请确认您已年满 18 岁后再继续。', ageInvalid: '请输入 18 至 120 之间的整数年龄。' });
+Object.assign(ar, { ageGateTitle: 'شرط العمر', ageConfirm: 'أؤكد أن عمري 18 عامًا أو أكثر', ageGateHelp: 'هذا التقييم مخصص للبالغين الذين تبلغ أعمارهم 18 عامًا أو أكثر. يجب تأكيد ذلك قبل رسم الساعة أو رفعها أو تحليلها.', ageHelp: 'أدخل عددًا صحيحًا بين 18 و120.', ageUnder18: 'يجب أن يكون عمرك 18 عامًا أو أكثر لاستخدام هذا التقييم.', ageConfirmRequired: 'أكّد أن عمرك 18 عامًا أو أكثر للمتابعة.', ageInvalid: 'يرجى إدخال عمر صحيح بين 18 و120.' });
+Object.assign(fr, { ageGateTitle: 'Condition d’âge', ageConfirm: 'Je confirme avoir 18 ans ou plus', ageGateHelp: 'Cette évaluation est réservée aux adultes de 18 ans ou plus. Vous devez le confirmer avant de dessiner, téléverser ou analyser une horloge.', ageHelp: 'Saisissez un nombre entier entre 18 et 120.', ageUnder18: 'Vous devez avoir 18 ans ou plus pour utiliser cette évaluation.', ageConfirmRequired: 'Confirmez que vous avez 18 ans ou plus pour continuer.', ageInvalid: 'Veuillez saisir un âge entier entre 18 et 120.' });
 
 const education = {
   en: ['Choose education level', 'No formal schooling', 'Primary school', 'Secondary / high school', 'Some college / vocational education', 'Bachelor’s degree', 'Postgraduate degree', 'Prefer not to say'],
@@ -164,6 +170,7 @@ function renderSummary() {
 }
 
 function showStep(id) {
+  if (!setup && ['clock-test', 'analyze', 'results'].includes(id)) id = 'setup';
   for (const s of ['setup', 'handoff', 'clock-test', 'analyze', 'results']) {
     if ($(s)) $(s).hidden = (s !== id);
   }
@@ -180,13 +187,16 @@ function showStep(id) {
 
 $('setup-form').addEventListener('submit', e => {
   e.preventDefault();
-  if (!$('setup-form').reportValidity()) return;
-  const age = Number($('age').value);
-  if (!Number.isInteger(age) || age < 1 || age > 120) {
-    $('error').textContent = locale === 'es' ? 'Introduce una edad válida entre 1 y 120.' : 'Please enter a whole-number age from 1 to 120.';
-    $('age').focus();
+  setup = null;
+  const gate = checkEligibility({ ageConfirmed: $('age-confirm').checked, age: $('age').value });
+  if (!gate.ok) {
+    $('error').textContent = t(gate.error);
+    $(gate.field).focus();
     return;
   }
+  if (!$('setup-form').reportValidity()) return;
+  $('error').textContent = '';
+  const age = gate.age;
   setup = makeSetup({
     age,
     education: $('education').value,
@@ -203,7 +213,7 @@ $('reset').addEventListener('click', () => {
   setup = null;
   clearDrawing(); resetCanvas();
   $('reason').value = '';
-  $('age').value = ''; $('education').value = ''; $('preferred').value = ''; $('consent').checked = false;
+  $('age').value = ''; $('education').value = ''; $('preferred').value = ''; $('consent').checked = false; $('age-confirm').checked = false;
   $('summary').replaceChildren();
   showStep('setup');
 });
@@ -238,7 +248,7 @@ function setBusy(value) {
 }
 $('remove-image').addEventListener('click', () => { clearDrawing(); showStep('clock-test'); });
 async function selectImage(file) {
-  if (!file || busy) return;
+  if (!file || busy || !setup) return;
   clearDrawing();
   const token = selection;
   let url;
@@ -262,7 +272,7 @@ async function selectImage(file) {
 }
 for (const id of ['file-input', 'camera-input']) $(id).addEventListener('change', e => selectImage(e.target.files?.[0]));
 $('analyze-btn').addEventListener('click', async () => {
-  if (!selectedFile || busy) return;
+  if (!selectedFile || busy || !setup) return;
   setBusy(true); status('analyzing');
   try {
     const result = await analyzeClockDrawing(selectedFile);
