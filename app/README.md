@@ -125,7 +125,12 @@ When a backend is configured and a drawing is analyzed, `renderResults()` in `ap
 - Each criterion's **PASS/FAIL** badge, **confidence %**, and **threshold %** with a meter
 - An independent **"⚠ Needs Review"** note where applicable
 - The **final 0–4 score**
-- A clearly labeled **"Explain My Results"** disclosure that currently reads: *"Planned feature. Personalized explanations are not available yet."* — this is an implemented placeholder, not a working explanation feature
+- The analyzed **drawing** next to the score
+- A **"Why?"** explanation per criterion, built only from the confidence, cutoff and Needs Review state the model reported (`explainCriterion()` in `app/features.js`)
+- **Retry analysis** if scoring fails; the drawing and setup are kept
+- **Print or save results** (drawing, score, explanations, date; no setup or age) and **Read results aloud** using the browser's built-in voice for the selected language, disabled when none is available
+
+Other additions: a **practice mode** on the drawing step (pen, eraser, undo; nothing can be submitted) and **zoom, rotate and replace** controls on the photo preview. The rotated image shown is the image that is analyzed. Scoring and thresholds are unchanged.
 
 ## Accessibility
 
@@ -180,6 +185,8 @@ Connecting the trained research baseline to this live app is **not yet done**. I
 | [`script.js`](script.js) | App logic: translations, display preferences, setup/upload/results flow, rendering |
 | [`analysis.js`](analysis.js) | The `analyzeClockDrawing(file)` inference adapter, thresholds, and response validation |
 | [`analysis.test.cjs`](analysis.test.cjs) | Node test suite covering the adapter's disconnected, binary-boundary, validation, and error-handling behavior |
+| [`features.js`](features.js) | Pure helpers: result explanations, zoom/rotate math, read-aloud text and voice choice, print report model |
+| [`features.test.cjs`](features.test.cjs) | Node tests for `features.js` using synthetic results |
 | [`styles.css`](styles.css) | Visual theme, layout, accessibility (contrast/large-text/color-blind) styles |
 | [`INFERENCE.md`](INFERENCE.md) | Backend response contract and integration notes for real inference |
 | [`assets/`](assets/) | Static images/icons only — no clock-drawing images, participant data, or model weights |
@@ -199,7 +206,7 @@ python -m http.server 8080
 Run the adapter's regression suite with Node's built-in test runner:
 
 ```bash
-node --test app/analysis.test.cjs
+node --test app/analysis.test.cjs app/features.test.cjs
 ```
 
 Fixtures used by the tests exist only within the test file and cannot be reached from the live app.
@@ -217,13 +224,13 @@ Fixtures used by the tests exist only within the test file and cannot be reached
 - Image quality (sharpness, framing, lighting) is not assessed — only file type/size/decodability are checked.
 - Thresholds are provisional and have not been clinically validated.
 - Vietnamese, Chinese, Arabic, and French translation coverage is partial; native-speaker review is still needed.
-- "Explain My Results" is a labeled placeholder with no explanation logic behind it yet.
+- Explanations only restate the model's reported confidence and cutoff; the model does not show where in the drawing it looked.
+- Read-aloud depends on a built-in browser voice for the selected language and is disabled when none is installed.
 
 ## Planned Features
 
 - Connecting a deployed ResNet50 (or successor) backend to `analyzeClockDrawing(file)`
 - Real image-quality detection (sharpness, framing, lighting) to replace the current "Not checked" placeholders
-- A working "Explain My Results" feature with plain-language explanations
 - Age-group research context, shown separately from the AI score
 - An optional AI assistant that explains results only, without altering the score
 - Full translation coverage and native-speaker review for all six languages

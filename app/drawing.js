@@ -2,7 +2,7 @@
 const canvas = $('drawing-canvas');
 const ink = canvas.getContext('2d', { willReadFrequently: true });
 let strokes = [], activeStroke = null, activePointer = null, tool = 'pen';
-let keyboardDrawing = false, cursor = { x: 400, y: 400 };
+let keyboardDrawing = false, cursor = { x: 400, y: 400 }, practiceMode = false;
 function drawStroke(stroke) {
   ink.strokeStyle = ink.fillStyle = stroke.tool === 'eraser' ? '#fff' : '#111';
   ink.lineWidth = stroke.tool === 'eraser' ? 30 : 4;
@@ -23,8 +23,19 @@ function redraw() {
   ink.fillStyle = '#fff'; ink.fillRect(0, 0, 800, 800);
   strokes.forEach(drawStroke);
   $('undo').disabled = $('clear-canvas').disabled = strokes.length === 0;
-  $('submit-drawing').disabled = !hasInk();
+  $('submit-drawing').disabled = practiceMode || !hasInk();
 }
+function setPractice(on) {
+  endStroke(); practiceMode = on; strokes = [];
+  $('practice-banner').hidden = !on;
+  $('practice-toggle').textContent = t(on ? 'practiceEnd' : 'practiceStart');
+  $('practice-toggle').setAttribute('aria-pressed', String(on));
+  for (const id of ['file-input', 'camera-input']) $(id).disabled = on;
+  redraw(); status(on ? 'practiceStarted' : 'practiceEnded');
+}
+function endPractice() { if (practiceMode) setPractice(false); }
+$('practice-toggle').addEventListener('click', () => setPractice(!practiceMode));
+$('locale').addEventListener('change', () => { $('practice-toggle').textContent = t(practiceMode ? 'practiceEnd' : 'practiceStart'); });
 function endStroke() {
   if (activeStroke) { activeStroke = null; status('drawingChanged'); redraw(); }
   activePointer = null; keyboardDrawing = false;
