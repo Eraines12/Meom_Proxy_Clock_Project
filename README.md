@@ -6,11 +6,9 @@
 
 ## 🌐 Live App
 
-👉 **[Launch MindDial AI](https://mind-dial.netlify.app)**
-
 MindDial AI is an educational AI-assisted clock-drawing screening-support prototype. It evaluates four visible clock-drawing criteria and produces a 0–4 feature score.
 
-**The Netlify app above is the primary public demo.** The [`notebooks/`](notebooks/) are development/training evidence, not the demo. **The interface, accessibility, and decision system are fully built — no real AI model is connected yet.** See [Current AI Model](#current-ai-model).
+**The Netlify app linked at the top is the primary public demo.** The [`notebooks/`](notebooks/) are development/training evidence, not the demo. **The interface, accessibility, and decision system are fully built — no real AI model is connected yet.** See [Current AI Model](#current-ai-model).
 
 > **MindDial AI does not diagnose Alzheimer's disease, dementia, or any other medical condition, and is not a substitute for professional evaluation.** See [Medical Disclaimer](#medical-disclaimer).
 
